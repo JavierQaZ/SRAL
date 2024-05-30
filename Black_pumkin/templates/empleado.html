@@ -1,16 +1,20 @@
-<form action="/add_empleado" method= 'POST'>
-
-<input type="text" name="Rut" placeholder="Rut" >
-<input type="text" name="Nombre" placeholder="Nombre" >
-<input type="text" name="Apellidos" placeholder="Apellidos" >
-<input type="text" name="Cod_rol" placeholder="Cod_rol" >
-<input type="text" name="Total_horas" placeholder="Total_horas" >
-<input type="text" name="Sueldo_total" placeholder="Sueldo_total" >
-
-<button type=" sumbit">
-Save
-</button>
-
-
-
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        function redirectTo(url) {
+            window.location.href = url;
+        }
+    </script>
+</head>
+<body>
+    <form action="/handle_form" method="post">
+        <button type="button" onclick="redirectTo('/add_empleado')">Agregar Empleados</button>
+        <button type="button" onclick="redirectTo('/delete_empleado')">Eliminar Empleados</button>
+        <button type="button" onclick="redirectTo('/edit_empleado')">Editar Empleados</button>
+    </form>
+</body>
+</html>
