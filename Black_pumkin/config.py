@@ -3,4 +3,4 @@ class Config:
     MYSQL_HOST = 'localhost'
     MYSQL_USER = 'root'
     MYSQL_PASSWORD = '1607'
-    MYSQL_DB = 'black_pumpkin'
+    MYSQL_DB = 'black_pumpkin.'
