@@ -1,0 +1,36 @@
+.content-title {
+  min-height: 60px;
+  padding-left: 15px;
+  padding-top: 13px;
+  font-size: 28px;
+}
+
+.content-body {
+  padding-left: 10px;
+}
+
+#listado-submit:hover {
+  background-color: #ffd6ba;
+}
+
+.bloque-listado {
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: none;
+  color: black;
+  background-color: #ffd6ba;
+  border: 5px solid #e4ad88;
+  border-radius: 6px;
+  height: 160px;
+  width: 200px;
+  max-height: 300px;
+  max-width: 400px;
+  text-align: center;
+  margin: 20px;
+  font-size: 30px;
+  transition: all ease-in .1ss;
+}
+
+.bloque-listado:hover{
+    transform: scale(1.1);
+}
