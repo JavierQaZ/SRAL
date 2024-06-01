@@ -10,7 +10,7 @@ def add_r_salida():
         
         # Validación de datos
         required_fields = {
-            'HoraIngreso': str,  # Asumimos que la fecha y hora se envían como cadena en formato ISO 8601
+            'HoraSalida': str,  # Asumimos que la fecha y hora se envían como cadena en formato ISO 8601
             'RUT': str
         }
         
@@ -20,18 +20,18 @@ def add_r_salida():
             if not isinstance(data[field], field_type):
                 return jsonify({"error": f"El campo {field} debe ser de tipo {field_type.__name__}"}), 400
 
-        HoraIngreso = data['HoraIngreso']
+        HoraSalida = data['HoraSalida']
         RUT = data['RUT']
         
-        # Convertir HoraIngreso a datetime si es necesario
+        # Convertir HoraSalida a datetime si es necesario
         from datetime import datetime
         try:
-            HoraIngreso = datetime.fromisoformat(HoraIngreso)
+            HoraSalida = datetime.fromisoformat(HoraSalida)
         except ValueError:
-            return jsonify({"error": "HoraIngreso debe estar en formato ISO 8601"}), 400
+            return jsonify({"error": "HoraSalida debe estar en formato ISO 8601"}), 400
         
         # Llamada al servicio para agregar rol
-        add_r_entrada_service(HoraIngreso, RUT)
+        add_r_salida_service(HoraSalida, RUT)
         
         return jsonify({"message": "Hora de ingreso agregada exitosamente"}), 201
     
