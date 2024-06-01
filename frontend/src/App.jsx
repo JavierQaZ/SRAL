@@ -10,7 +10,7 @@ function App() {
       </Route>
 
       {/* Definir la ruta /home */}
-      <Route path ="/home" component={<Home />}/>
+      <Route path ="/home/*" component={<Home />}/>
 
       {/* agregar rutas */}
     </Routes>

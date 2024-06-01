@@ -50,7 +50,7 @@ function Home(){
                             <Route path="/registroInicio" element={<RegistroInicio/>}></Route>
                             <Route path="/registroSalida" element={<RegistroSalida/>}></Route>
                             <Route path="/visualizacionDatos" element={<VisualizacionDatos/>}></Route>
-                            <Route path="/registro" element={<Registro/>}></Route>
+                            <Route path="/registro/*" element={<Registro/>}></Route>
                             <Route path="/gestion" element={<Gestion/>}></Route>
                         </Routes>
                     </main>
