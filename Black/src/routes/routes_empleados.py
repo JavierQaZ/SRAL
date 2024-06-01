@@ -1,10 +1,10 @@
 from flask import Blueprint, request, jsonify
 from ..service.empleado_service import agregar_empleado_service
 
-bp = Blueprint('empleado_Blueprint', __name__)
+bp = Blueprint('rol_Blueprint', __name__)
 
 @bp.route('/add', methods=['POST'])
-def add_empleado():
+def add_rol():
     try:
         data = request.get_json()
         
