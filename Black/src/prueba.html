@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Employee</title>
+</head>
+<body>
+    <h1>Add Employee</h1>
+    <form id="addEmployeeForm">
+        <label for="Rut">Rut:</label>
+        <input type="text" id="Rut" name="Rut" required><br><br>
+        
+        <label for="Nombre">Nombre:</label>
+        <input type="text" id="Nombre" name="Nombre" required><br><br>
+        
+        <label for="Apellidos">Apellidos:</label>
+        <input type="text" id="Apellidos" name="Apellidos" required><br><br>
+        
+        <label for="Cod_rol">Código de Rol:</label>
+        <input type="text" id="Cod_rol" name="Cod_rol" required><br><br>
+        
+        <label for="Total_horas">Total de Horas:</label>
+        <input type="number" id="Total_horas" name="Total_horas" required><br><br>
+        
+        <label for="Sueldo_total">Sueldo Total:</label>
+        <input type="number" id="Sueldo_total" name="Sueldo_total" required><br><br>
+        
+        <button type="submit">Add Employee</button>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#addEmployeeForm').submit(function(event){
+                event.preventDefault();
+                var formData = {
+                    Rut: $('#Rut').val(),
+                    Nombre: $('#Nombre').val(),
+                    Apellidos: $('#Apellidos').val(),
+                    Cod_rol: $('#Cod_rol').val(),
+                    Total_horas: $('#Total_horas').val(),
+                    Sueldo_total: $('#Sueldo_total').val()
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/add_empleado',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function(response){
+                        alert(response.message);
+                        // Puedes hacer otras acciones aquí después de agregar el empleado exitosamente
+                    },
+                    error: function(xhr, status, error){
+                        alert('Error al agregar empleado: ' + error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
