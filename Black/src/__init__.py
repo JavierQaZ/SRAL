@@ -1,20 +1,17 @@
 from flask import Flask
-from .routes import routes
-from .routes import routes_empleados
 from flask_cors import CORS
+from .routes import routes_empleados
 
 app = Flask(__name__)
 
-def create_connection(Config):
-
+def create_app(Config):
+    app = Flask(__name__)
     app.config.from_object(Config)
 
+    # Configurar CORS
+    CORS(app, resources={"/empleados/*": {"origins": "http://localhost:3000", "methods": ["POST"]}})
 
-    CORS(app, resources={"/add_empleados/": {"origins": "http://localhost:3000", "methods": ["POST"]}})
-    
-    with app.app_context():
-        # Importar rutas
-        # Registrar rutas
-        app.register_blueprint(routes.bp)
-        app.register_blueprint(routes_empleados.bp, url_prefix ="/add_empleados")
+
+    app.register_blueprint(routes_empleados.bp, url_prefix="/empleados")
+
     return app

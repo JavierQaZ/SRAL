@@ -1,13 +1,14 @@
-# database/db_connection.py
+from decouple import config
+import pymysql
 
-import mysql.connector
-from config import Config
-
-def create_connection():
-    connection = mysql.connector.connect(
-        host=Config.MYSQL_HOST,
-        user=Config.MYSQL_USER,
-        password=Config.MYSQL_PASSWORD,
-        database=Config.MYSQL_DB
-    )
-    return connection
+def get_connection():
+    try:
+        #devuelve una conexion (socket)
+        return pymysql.connect( 
+            host = config('MYSQL_HOST'),
+            user = config('MYSQL_USER'),
+            password = config('MYSQL_PASSWORD'),
+            db = config('MYSQL_DB')
+        )
+    except Exception as exc:
+        print(exc)
