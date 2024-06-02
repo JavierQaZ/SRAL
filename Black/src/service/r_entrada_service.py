@@ -21,10 +21,13 @@ def add_r_entrada_service(HoraIngreso, RUT):
         raise e
 
 
-
-
-
-
+#
+#{
+#	"HoraIngreso": "2024-06-01T08:00:00",
+#	"RUT": "1111111-0"
+#}
+#
+#
 #DELIMITER //
 #
 #CREATE PROCEDURE agregar_hora_ingreso (

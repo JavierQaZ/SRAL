@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from ..service.rol_service import add_rol_service
 
-bp = Blueprint('Rol_Blueprint', __name__)
+bp = Blueprint('rol_Blueprint', __name__)
 
 @bp.route('/add', methods=['POST'])
 def add_rol():
