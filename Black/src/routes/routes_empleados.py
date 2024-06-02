@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from ..service.empleado_service import agregar_empleado_service
 from ..service.empleado_service import editar_empleado_service
+from ..service.empleado_service import delete_empleado_service
 
 bp = Blueprint('empleados_Blueprint', __name__)
 
@@ -53,6 +54,26 @@ def edit_empleado():
         editar_empleado_service(RUT, Nombre, Apellidos, CodRol, TotalHoras, SueldoTotal)
         
         return jsonify({"message": "Empleado editado exitosamente"}), 200
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+@bp.route('/delete', methods=['DELETE'])
+def delete_empleado():
+    try:
+        data = request.get_json()
+        
+        # Validación de datos
+        if 'RUT' not in data:
+            return jsonify({"error": "Falta el campo RUT"}), 400
+        
+        RUT = data['RUT']
+        
+        # Llamada al servicio para eliminar empleado
+        delete_empleado_service(RUT)
+        
+        return jsonify({"message": "Empleado eliminado exitosamente"}), 200
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
