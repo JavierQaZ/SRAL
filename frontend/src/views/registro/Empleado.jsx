@@ -85,7 +85,8 @@ function Empleado() {
                             id='inlineFormCustomSelectPref'
                             defaultValue='-1'
                         >
-
+                            {/* verificar roles registrados */}
+                            {/* P E N D I E N T E */}
                             <option value='-1'>SELECT</option>
                             <option value='1'> ROL1</option>
                             <option value='2'> ROL2</option>
