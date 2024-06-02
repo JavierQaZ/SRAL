@@ -1,0 +1,171 @@
+-- =========================================
+--              Procedimientos ROL
+-- =========================================
+
+DELIMITER //
+
+CREATE PROCEDURE agregar_rol (
+    IN p_Nombre VARCHAR(100),
+    IN p_SueldoPorHora DECIMAL(10, 2)
+)
+BEGIN
+    INSERT INTO rol (Nombre, SueldoPorHora)
+    VALUES (p_Nombre, p_SueldoPorHora);
+END //
+
+DELIMITER //
+
+CREATE PROCEDURE editar_rol (
+    IN p_Codigo INT,
+    IN p_Nombre VARCHAR(100),
+    IN p_SueldoPorHora DECIMAL(10, 2)
+)
+BEGIN
+    UPDATE rol
+    SET Nombre = p_Nombre,
+        SueldoPorHora = p_SueldoPorHora
+    WHERE Codigo = p_Codigo;
+END //
+
+DELIMITER //
+
+CREATE PROCEDURE eliminar_rol (
+    IN p_Codigo INT
+)
+BEGIN
+    DELETE FROM rol
+    WHERE Codigo = p_Codigo;
+END //
+
+DELIMITER ;
+
+-- =========================================
+--            Procedimientos EMPLEADO
+-- =========================================
+
+DELIMITER //
+
+CREATE PROCEDURE agregar_empleado (
+    IN p_Rut VARCHAR(255),
+    IN p_Nombre VARCHAR(255),
+    IN p_Apellidos VARCHAR(255),
+    IN p_Cod_rol VARCHAR(255),
+    IN p_Total_horas INT,
+    IN p_Sueldo_total DECIMAL(10, 2)
+)
+BEGIN
+    INSERT INTO empleados (RUT, Nombre, Apellidos, CodigoRol, TotalHorasTrabajadas, SueldoTotal)
+    VALUES (p_Rut, p_Nombre, p_Apellidos, p_Cod_rol, p_Total_horas, p_Sueldo_total);
+END //
+
+DELIMITER //
+
+CREATE PROCEDURE editar_empleado (
+    IN p_RUT VARCHAR(255),
+    IN p_Nombre VARCHAR(255),
+    IN p_Apellidos VARCHAR(255),
+    IN p_Cod_rol VARCHAR(255),
+    IN p_Total_horas INT,
+    IN p_Sueldo_total DECIMAL(10, 2)
+)
+BEGIN
+    UPDATE empleados
+    SET Nombre = p_Nombre,
+        Apellidos = p_Apellidos,
+        CodigoRol = p_Cod_rol,
+        TotalHorasTrabajadas = p_Total_horas,
+        SueldoTotal = p_Sueldo_total
+    WHERE RUT = p_RUT;
+END //
+
+DELIMITER //
+
+CREATE PROCEDURE eliminar_empleado (
+    IN p_RUT VARCHAR(255)
+)
+BEGIN
+    DELETE FROM empleados
+    WHERE RUT = p_RUT;
+END //
+
+DELIMITER ;
+
+-- =========================================
+--          Procedimientos HORAENTRADA
+-- =========================================
+
+DELIMITER //
+
+CREATE PROCEDURE agregar_hora_ingreso (
+    IN p_HoraIngreso DATETIME,
+    IN p_RUT VARCHAR(15)
+)
+BEGIN
+    INSERT INTO registroentrada (HoraIngreso, RUT)
+    VALUES (p_HoraIngreso, p_RUT);
+END //
+
+DELIMITER //
+
+CREATE PROCEDURE editar_hora_ingreso (
+    IN p_HoraIngreso DATETIME,
+    IN p_RUT VARCHAR(255)
+)
+BEGIN
+    UPDATE registroentrada
+    SET HoraIngreso = p_HoraIngreso
+    WHERE RUT = p_RUT;
+END //
+
+DELIMITER //
+
+CREATE PROCEDURE eliminar_registroentrada (
+    IN p_HoraIngreso DATETIME,
+    IN p_RUT VARCHAR(255)
+)
+BEGIN
+    DELETE FROM registroentrada
+    WHERE HoraIngreso = p_HoraIngreso AND RUT = p_RUT;
+END //
+
+DELIMITER ;
+
+-- =========================================
+--           Procedimientos HORASALIDA
+-- =========================================
+
+DELIMITER //
+
+CREATE PROCEDURE agregar_hora_salida (
+    IN p_HoraSalida DATETIME,
+    IN p_RUT VARCHAR(15)
+)
+BEGIN
+    INSERT INTO registrosalida (HoraSalida, RUT)
+    VALUES (p_HoraSalida, p_RUT);
+END //
+
+DELIMITER //
+
+CREATE PROCEDURE editar_hora_salida (
+    IN p_HoraSalida DATETIME,
+    IN p_RUT VARCHAR(255)
+)
+BEGIN
+    UPDATE registrosalida
+    SET HoraSalida = p_HoraSalida
+    WHERE RUT = p_RUT;
+END //
+
+DELIMITER //
+
+CREATE PROCEDURE eliminar_hora_salida (
+    IN p_HoraSalida DATETIME,
+    IN p_RUT VARCHAR(255)
+)
+BEGIN
+    DELETE FROM registrosalida
+    WHERE HoraSalida = p_HoraSalida AND RUT = p_RUT;
+END //
+
+DELIMITER ;
