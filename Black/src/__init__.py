@@ -12,10 +12,10 @@ def create_app(Config):
     app.config.from_object(Config)
 
     # Configurar CORS
-    CORS(app, resources={"/empleados/*": {"origins": "http://localhost:3000", "methods": ["POST"]}})
-    CORS(app, resources={"/rol/*": {"origins": "http://localhost:3000", "methods": ["POST"]}})
-    CORS(app, resources={"/r_entrada/*": {"origins": "http://localhost:3000", "methods": ["POST"]}})
-    CORS(app, resources={"/r_salida/*": {"origins": "http://localhost:3000", "methods": ["POST"]}})
+    CORS(app, resources={"/empleados/*": {"origins": "http://localhost:3000", "methods": ["POST","PUT"]}})
+    CORS(app, resources={"/rol/*": {"origins": "http://localhost:3000", "methods": ["POST","PUT"]}})
+    CORS(app, resources={"/r_entrada/*": {"origins": "http://localhost:3000", "methods": ["POST","PUT"]}})
+    CORS(app, resources={"/r_salida/*": {"origins": "http://localhost:3000", "methods": ["POST","PUT"]}})
 
 
     app.register_blueprint(routes_empleados.bp, url_prefix="/empleados")

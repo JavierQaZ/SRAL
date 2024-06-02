@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from ..service.rol_service import add_rol_service
+from ..service.rol_service import add_rol_service, editar_rol_service
 
 bp = Blueprint('rol_Blueprint', __name__)
 
@@ -27,6 +27,30 @@ def add_rol():
         add_rol_service(Nombre, SueldoPorHora)
         
         return jsonify({"message": "rol agregado exitosamente"}), 201
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+@bp.route('/edit', methods=['PUT'])
+def edit_rol():
+    try:
+        data = request.get_json()
+        
+        # Validación de datos
+        required_fields = ['Codigo', 'Nombre', 'SueldoPorHora']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error": f"Falta el campo {field}"}), 400
+
+        Codigo = data['Codigo']
+        Nombre = data['Nombre']
+        SueldoPorHora = data['SueldoPorHora']
+        
+        # Llamada al servicio para editar rol
+        editar_rol_service(Codigo, Nombre, SueldoPorHora)
+        
+        return jsonify({"message": "Rol editado exitosamente"}), 200
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
