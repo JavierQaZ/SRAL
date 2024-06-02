@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from ..service.r_entrada_service import add_r_entrada_service
+from ..service.r_entrada_service import add_r_entrada_service, editar_hora_ingreso_service
 
 bp = Blueprint('r_entrada_Blueprint', __name__)
 
@@ -34,6 +34,30 @@ def add_r_entrada():
         add_r_entrada_service(HoraIngreso, RUT)
         
         return jsonify({"message": "Hora de ingreso agregada exitosamente"}), 201
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+@bp.route('/edit', methods=['PUT'])
+def edit_hora_ingreso():
+    try:
+        data = request.get_json()
+        
+        # Validación de datos
+        required_fields = ['ID', 'HoraIngreso', 'RUT']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error": f"Falta el campo {field}"}), 400
+
+        ID = data['ID']
+        HoraIngreso = data['HoraIngreso']
+        RUT = data['RUT']
+        
+        # Llamada al servicio para editar la hora de ingreso
+        editar_hora_ingreso_service(ID, HoraIngreso, RUT)
+        
+        return jsonify({"message": "Hora de ingreso editada exitosamente"}), 200
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
