@@ -17,12 +17,12 @@ function Home(){
                 <div className="row">
                     <div className="sidebar col-auto col-sm-4 col-md-3 col-lg-3 col-xl-2 flex-column bg-mint min-vh-100 d-flex justify-content-between ">
                         <div className="d-flex flex-column m-1" id="sidebar-container">
-                            <Link className="d-inline-flex p-2" id="side-item-brand">
+                            <Link to=""className="d-inline-flex p-2" id="side-item-brand">
                                 <img
-                                src="/icons/palomito.png" /* revisar icon */
+                                src="/vite.svg" /* reemplazar con ícono real */
                                 alt="logo "
-                                width="50px"
-                                height="50px"
+                                width="40px"
+                                height="40px"
                                 />
                                 <h5 className="ms-2 mt-3">SRAL</h5>
                             </Link>

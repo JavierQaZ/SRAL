@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import axios from 'axios'
 
 function RegistroInicio() {
 
     const [rut, setRut] = useState("")
+    const [currentDateTime, setCurrentDateTime] = useState(null);
     const [exitoRegistroInicio, setExitoRegistroInicio] = useState("")
 
     const handleOnChangeRut = (e) => {
@@ -10,15 +12,39 @@ function RegistroInicio() {
         setRut(e.target.value)
     }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const registroRutInicio = {
-            //revisar nombres de la bdd
-            "":  rut
-        }
+    const handleCaptureTime = () => {
+        const now = new Date();
+        setCurrentDateTime(now.toLocaleString());
     }
 
-    //axios
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        handleCaptureTime();
+        const registroRutInicio = {
+            "rut_empleado":  rut,
+            "horaSalida_registro": currentDateTime
+
+        }
+
+        axios.post('http://localhost:5000/r_entrada/add', registroRutInicio)
+            .then((response) => {
+                setExitoRegistroInicio("Registro de Inicio exitoso")
+                console.log("Registro del Inicio exitoso", response.data)
+            })
+            .catch ((error) => {
+                setExitoRegistroInicio("Error al registrar el Inicio")
+                console.error("Error al registrar el Inicio: ", error)
+            });
+    }
+
+    const ping = exitoRegistroInicio ? (
+        <div className='mt-3'>
+            <p>
+                {exitoRegistroInicio}: <br/>
+                {rut} a las {currentDateTime}
+            </p>
+        </div>
+    ): null;
 
     return (
         <>
@@ -41,7 +67,9 @@ function RegistroInicio() {
                             <button type="submit" className="btn btn-warning ms-4 mt-3 text-white">
                                 Registrar Entrada
                             </button>
-                            {exitoRegistroInicio}
+                            <br/>
+                            <br/>
+                            {ping}
                         </form>
                     </div>
                 </div>

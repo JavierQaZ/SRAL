@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-// import axios from "axios";
+import axios from "axios";
 
 function Roles() {
 
@@ -20,13 +20,29 @@ function Roles() {
     const handleSubmit = (e) => {
         e.preventDefault();
         const nuevoRol = {
-            //revisar nombres de la bdd
-            "": nombreRol,
-            "": salarioRol
+            "nombre_rol": nombreRol,
+            "sueldoPorHora_rol": salarioRol
         }
+
+        axios.post('http://localhost:5000/rol/add', nuevoRol)
+            .then((response) => {
+                setExitoRegistrarRol("Rol registrado exitosamente")
+                console.log("Rol registrado exitosamente", response.data)
+            })
+            .catch ((error) => {
+                setExitoRegistrarRol("Error al registrar el rol")
+                console.error("Error al registrar el rol: ", error)
+            });
     }
 
-    //axios
+    const ping = exitoRegistrarRol ? (
+        <div className='mt-3'>
+            <p>
+                {exitoRegistrarRol}: <br/>
+                {nombreRol}
+            </p>
+        </div>
+    ): null;
 
     return (
         <>
@@ -53,7 +69,9 @@ function Roles() {
                 <button type="submit" className="btn btn-warning ms-4 mt-3 text-white">
                     Registrar Rol
                 </button>
-                {exitoRegistrarRol}
+                <br/>
+                <br/>
+                {ping}
             </form>
         </>
     )
