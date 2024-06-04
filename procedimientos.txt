@@ -169,3 +169,53 @@ BEGIN
 END //
 
 DELIMITER ;
+
+
+-- =========================================
+--              Triggers
+-- =========================================
+
+DELIMITER //
+
+CREATE TRIGGER trigger_actualizar_horas_y_sueldo
+AFTER INSERT ON registrosalida
+FOR EACH ROW
+BEGIN
+    DECLARE entrada DATETIME;
+    DECLARE horas_trabajadas DECIMAL(10, 2);
+    DECLARE total_horas DECIMAL(10, 2);
+    DECLARE sueldo_por_hora DECIMAL(10, 2);
+
+    -- Obtener la hora de entrada del mismo día
+    SELECT HoraIngreso INTO entrada
+    FROM registroentrada
+    WHERE RUT = NEW.RUT
+    AND DATE(HoraIngreso) = DATE(NEW.HoraSalida)
+    LIMIT 1;
+
+    -- Calcular horas trabajadas del día
+    SET horas_trabajadas = TIMESTAMPDIFF(HOUR, entrada, NEW.HoraSalida);
+
+    -- Obtener el total de horas trabajadas actuales
+    SELECT TotalHorasTrabajadas INTO total_horas
+    FROM Empleados
+    WHERE RUT = NEW.RUT;
+
+    -- Actualizar el total de horas trabajadas
+    SET total_horas = total_horas + horas_trabajadas;
+    UPDATE Empleados
+    SET TotalHorasTrabajadas = total_horas
+    WHERE RUT = NEW.RUT;
+
+    -- Obtener el sueldo por hora del rol del empleado
+    SELECT SueldoPorHora INTO sueldo_por_hora
+    FROM Rol
+    WHERE Codigo = (SELECT CodigoRol FROM Empleados WHERE RUT = NEW.RUT);
+
+    -- Calcular y actualizar el sueldo total
+    UPDATE Empleados
+    SET SueldoTotal = total_horas * sueldo_por_hora
+    WHERE RUT = NEW.RUT;
+END //
+
+DELIMITER ;
