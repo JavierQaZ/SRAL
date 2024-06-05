@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from "axios";
 
 function Empleado() {
@@ -6,7 +6,19 @@ function Empleado() {
     const [rut, setRut] = useState("")
     const [nombre, setNombre] = useState("")
     const [apellidos, setApellidos] = useState("")
+    const [rol, setRol] = useState("-1")
     const [exitoRegistrarEmpleado, setExitoRegistrarEmpleado] = useState("")
+    const [roles, setRoles] = useState([])
+
+    useEffect(() => {
+        axios.get('http://localhost:5000/roles/get')
+            .then((response) => {
+                setRoles(response.data)
+            })
+            .catch((error) => {
+                console.error("Error al obtemer los roles: ", error);
+            })
+    }, []);
 
     const handleOnChangeRut = (e) => {
         console.log(e.target.value)
@@ -22,12 +34,24 @@ function Empleado() {
         setApellidos(e.target.value)
     }
 
+    const handleOnChangeRol = (e) => {
+        console.log(e.target.value)
+        setRol(e.target.value)
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (rut === "" || nombre === "" || apellidos === "" || rol === "-1") {
+            setExitoRegistrarEmpleado("Todos los campos son obligatorios")
+            return;
+        }
+
         const nuevoEmpleado = {
             "rut_empleado": rut,
             "nombre_empleado": nombre,
             "apellidos_empleado": apellidos,
+            "codigo_rol": rol /* REVISAR */
         }
 
         axios.post('http://localhost:5000/empleados/add', nuevoEmpleado)
@@ -85,14 +109,11 @@ function Empleado() {
                         <select
                             className='custom-select'
                             id='inlineFormCustomSelectPref'
-                            defaultValue='-1'
+                            value={rol}
+                            onChange={handleOnChangeRol}
                         >
-                            {/* verificar roles registrados */}
-                            {/* P E N D I E N T E */}
-                            <option value='-1'>SELECT</option>
-                            <option value='1'> ROL1</option>
-                            <option value='2'> ROL2</option>
-                            <option value='3'> ROL3</option>
+                            <option value='-1'>Seleccione el Rol</option>
+                            <option key={rol.codigo_rol} value={rol.codigo_rol}>{rol.nombre_rol}</option>
                         </select>
                     </label>
                 </div>

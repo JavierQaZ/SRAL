@@ -1,19 +1,22 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
+import axios from 'axios';
 
 function VisualizacionDatos() {
 
-    const datos = [
-        {rut: 12345678, nombre: 'Juan', rol: 'maestro', horas: 23, salario: 2000},
-        {rut: 18765432, nombre: 'Jose', rol: 'jardinero', horas: 11, salario: 2000},
-        {rut: 19456321, nombre: 'Jack', rol: 'auxiliar', horas: 47, salario: 2000},
-    ]
+    const [datos, setDatos] = useState([])
+
+    useEffect(() => {
+        axios.get('http://localhost:5000/empleados/get')
+            .then(response => {
+                setDatos(response.data);
+            })
+    }, []);
 
     return (
         <>
         <h4 className="bg-payne-grey content-title shadow">VISUALIZACIÓN DE DATOS</h4>
             <div className="content-body">
                 <div className="d-flex flex-column">
-                    <h4>Tabla de Cosas</h4>
                     <table>
                         <thead>
                             <tr>
@@ -26,12 +29,12 @@ function VisualizacionDatos() {
                         </thead>
                         <tbody>
                             {datos.map((item) => (
-                                <tr key={item.rut}>
-                                    <td>{item.rut}</td>
-                                    <td>{item.nombre}</td>
-                                    <td>{item.rol}</td>
-                                    <td>{item.horas}</td>
-                                    <td>{item.salario}</td>
+                                <tr key={item.rut_empleado}>
+                                    <td>{item.rut_empleado}</td>
+                                    <td>{item.nombre_empleado}</td>
+                                    <td>{item.codigo_rol}</td>
+                                    <td>{item.totalHorasTrabajadas_empleado}</td>
+                                    <td>{item.sueldoTotal_empleado}</td>
                                 </tr>
                             ))}
                         </tbody>
