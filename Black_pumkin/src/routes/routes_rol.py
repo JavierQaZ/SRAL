@@ -10,8 +10,8 @@ def add_rol():
         
         # Validación de datos
         required_fields = {
-            'Nombre': str,
-            'SueldoPorHora': float
+            'nombre_rol': str,
+            'sueldoPorHora_rol': float
         }
         
         for field, field_type in required_fields.items():
@@ -20,11 +20,11 @@ def add_rol():
             if not isinstance(data[field], field_type):
                 return jsonify({"error": f"El campo {field} debe ser de tipo {field_type.__name__}"}), 400
 
-        Nombre = data['Nombre']
-        SueldoPorHora = data['SueldoPorHora']
+        nombre_rol = data['nombre_rol']
+        sueldoPorHora_rol = data['sueldoPorHora_rol']
         
         # Llamada al servicio para agregar rol
-        add_rol_service(Nombre, SueldoPorHora)
+        add_rol_service(nombre_rol, sueldoPorHora_rol)
         
         return jsonify({"message": "rol agregado exitosamente"}), 201
     
@@ -38,17 +38,17 @@ def edit_rol():
         data = request.get_json()
         
         # Validación de datos
-        required_fields = ['Codigo', 'Nombre', 'SueldoPorHora']
+        required_fields = ['codigo_rol', 'nombre_rol', 'sueldoPorHora_rol']
         for field in required_fields:
             if field not in data:
                 return jsonify({"error": f"Falta el campo {field}"}), 400
 
-        Codigo = data['Codigo']
-        Nombre = data['Nombre']
-        SueldoPorHora = data['SueldoPorHora']
+        codigo_rol = data['codigo_rol']
+        nombre_rol = data['nombre_rol']
+        sueldoPorHora_rol = data['sueldoPorHora_rol']
         
         # Llamada al servicio para editar rol
-        editar_rol_service(Codigo, Nombre, SueldoPorHora)
+        editar_rol_service(codigo_rol, nombre_rol, sueldoPorHora_rol)
         
         return jsonify({"message": "Rol editado exitosamente"}), 200
     
@@ -61,13 +61,13 @@ def delete_rol():
         data = request.get_json()
         
         # Validación de datos
-        if 'Codigo' not in data:
-            return jsonify({"error": "Falta el campo Codigo"}), 400
+        if 'codigo_rol' not in data:
+            return jsonify({"error": "Falta el campo codigo_rol"}), 400
 
-        Codigo = data['Codigo']
+        codigo_rol = data['codigo_rol']
         
         # Llamada al servicio para eliminar el rol
-        delete_rol_service(Codigo)
+        delete_rol_service(codigo_rol)
         
         return jsonify({"message": "Rol eliminado exitosamente"}), 200
     

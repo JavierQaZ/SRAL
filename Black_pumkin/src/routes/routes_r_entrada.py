@@ -7,11 +7,10 @@ bp = Blueprint('r_entrada_Blueprint', __name__)
 def add_r_entrada():
     try:
         data = request.get_json()
-        
+
         # Validación de datos
         required_fields = {
-            'HoraIngreso': str,  # Asumimos que la fecha y hora se envían como cadena en formato ISO 8601
-            'RUT': str
+            'rut_empleado': str
         }
         
         for field, field_type in required_fields.items():
@@ -20,18 +19,10 @@ def add_r_entrada():
             if not isinstance(data[field], field_type):
                 return jsonify({"error": f"El campo {field} debe ser de tipo {field_type.__name__}"}), 400
 
-        HoraIngreso = data['HoraIngreso']
-        RUT = data['RUT']
+        rut_empleado = data['rut_empleado']
         
-        # Convertir HoraIngreso a datetime si es necesario
-        from datetime import datetime
-        try:
-            HoraIngreso = datetime.fromisoformat(HoraIngreso)
-        except ValueError:
-            return jsonify({"error": "HoraIngreso debe estar en formato ISO 8601"}), 400
-        
-        # Llamada al servicio para agregar rol
-        add_r_entrada_service(HoraIngreso, RUT)
+        # Llamada al servicio para agregar hora de ingreso
+        add_r_entrada_service(rut_empleado)
         
         return jsonify({"message": "Hora de ingreso agregada exitosamente"}), 201
     
@@ -47,8 +38,8 @@ def edit_hora_ingreso():
         
         # Validación de datos
         required_fields = {
-            'HoraIngreso': str,  # Asumimos que la fecha y hora se envían como cadena en formato ISO 8601
-            'RUT': str
+            'horaIngreso_registro': str,  # Asumimos que la fecha y hora se envían como cadena en formato ISO 8601
+            'rut_empleado': str
         }
         
         for field, field_type in required_fields.items():
@@ -57,18 +48,18 @@ def edit_hora_ingreso():
             if not isinstance(data[field], field_type):
                 return jsonify({"error": f"El campo {field} debe ser de tipo {field_type.__name__}"}), 400
 
-        HoraIngreso = data['HoraIngreso']
-        RUT = data['RUT']
+        horaIngreso_registro = data['horaIngreso_registro']
+        rut_empleado = data['rut_empleado']
         
-        # Convertir HoraIngreso a datetime si es necesario
+        # Convertir horaIngreso_registro a datetime si es necesario
         from datetime import datetime
         try:
-            HoraIngreso = datetime.fromisoformat(HoraIngreso)
+            horaIngreso_registro = datetime.fromisoformat(horaIngreso_registro)
         except ValueError:
             return jsonify({"error": "Hora Ingreso debe estar en formato ISO 8601"}), 400
         
         # Llamada al servicio para editar la hora de salida
-        edit_r_entrada_service(HoraIngreso, RUT)
+        edit_r_entrada_service(horaIngreso_registro, rut_empleado)
         
         return jsonify({"message": "Hora de Ingreso editada exitosamente"}), 200
     
@@ -83,8 +74,8 @@ def delete_r_entrada():
         
         # Validación de datos
         required_fields = {
-            'HoraIngreso': str,  # Asumimos que la fecha y hora se envían como cadena en formato ISO 8601
-            'RUT': str
+            'horaIngreso_registro': str,  # Asumimos que la fecha y hora se envían como cadena en formato ISO 8601
+            'rut_empleado': str
         }
         
         for field, field_type in required_fields.items():
@@ -93,18 +84,18 @@ def delete_r_entrada():
             if not isinstance(data[field], field_type):
                 return jsonify({"error": f"El campo {field} debe ser de tipo {field_type.__name__}"}), 400
 
-        HoraIngreso = data['HoraIngreso']
-        RUT = data['RUT']
+        horaIngreso_registro = data['horaIngreso_registro']
+        rut_empleado = data['rut_empleado']
         
-        # Convertir HoraIngreso a datetime si es necesario
+        # Convertir horaIngreso_registro a datetime si es necesario
         from datetime import datetime
         try:
-            HoraIngreso = datetime.fromisoformat(HoraIngreso)
+            horaIngreso_registro = datetime.fromisoformat(horaIngreso_registro)
         except ValueError:
-            return jsonify({"error": "HoraIngreso debe estar en formato ISO 8601"}), 400
+            return jsonify({"error": "horaIngreso_registro debe estar en formato ISO 8601"}), 400
         
         # Llamada al servicio para editar la hora de entrada
-        delete_r_entrada_service(HoraIngreso, RUT)
+        delete_r_entrada_service(horaIngreso_registro, rut_empleado)
         
         return jsonify({"message": "Registro de entrada eliminado exitosamente"}), 200
     

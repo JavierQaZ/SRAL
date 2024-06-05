@@ -1,12 +1,12 @@
 from ..database.db_conección import get_connection
 
-def add_rol_service(Nombre,SueldoPorHora):
+def add_rol_service(nombre_rol,sueldoPorHora_rol):
     try:
         connection = get_connection()
         cursor = connection.cursor()
 
         # Llamar al procedimiento almacenado para agregar un empleado
-        cursor.callproc('agregar_rol', (Nombre, SueldoPorHora))
+        cursor.callproc('agregar_rol', (nombre_rol, sueldoPorHora_rol))
         
         # Commit para aplicar los cambios en la base de datos
         connection.commit()
@@ -19,14 +19,14 @@ def add_rol_service(Nombre,SueldoPorHora):
         # Manejar errores
         print("Error al agregar empleado:", e)
         
-def editar_rol_service(Codigo, Nombre, SueldoPorHora):
+def editar_rol_service(codigo_rol, nombre_rol, sueldoPorHora_rol):
     try:
         # Obtener la conexión a la base de datos
         connection = get_connection()
         cursor = connection.cursor()
 
         # Llamar al procedimiento almacenado para editar un rol
-        cursor.callproc('editar_rol', (Codigo, Nombre, SueldoPorHora))
+        cursor.callproc('editar_rol', (codigo_rol, nombre_rol, sueldoPorHora_rol))
         
         # Commit para aplicar los cambios en la base de datos
         connection.commit()
@@ -40,13 +40,13 @@ def editar_rol_service(Codigo, Nombre, SueldoPorHora):
         print("Error al editar rol:", e)
         raise e
         
-def delete_rol_service(Codigo):
+def delete_rol_service(codigo_rol):
     try:
         connection = get_connection()
         cursor = connection.cursor()
 
         # Llamar al procedimiento almacenado para eliminar un rol
-        cursor.callproc('eliminar_rol', (Codigo,))
+        cursor.callproc('eliminar_rol', (codigo_rol,))
         
         # Commit para aplicar los cambios en la base de datos
         connection.commit()
@@ -62,7 +62,7 @@ def delete_rol_service(Codigo):
        
         
 #{
-#    "Nombre": "Limpieza",
-#    "SueldoPorHora": 20.50
+#    "nombre_rol": "Limpieza",
+#    "sueldoPorHora_rol": 20.50
 #}
 
