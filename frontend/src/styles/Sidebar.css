@@ -1,0 +1,40 @@
+.bg-dark-mint{
+  background-color: #053530;
+}
+
+.bg-mint{
+  background-color: #BEE3DB;
+}
+
+.bg-light-mint{
+  background-color: #00A9A5;
+}
+
+#side-item-brand{
+  text-decoration: none;
+  color: black;
+  border-bottom: 2px inset #053530;
+}
+
+#sidebar-container{
+  gap: 15px;
+}
+
+.side-item{
+  font-family: 'Comic Sans MS', sans-serif;
+  border: 3px solid #89B0AE;
+  text-decoration: none;
+  color: rgb(22, 20, 20);
+  font-size: 18px;
+  padding: 10px;
+  text-transform: uppercase;
+  text-align: center;
+  border-radius: 5px;
+  transition: all ease-in .15s;
+}
+
+.side-item:hover{
+  background-color: #89B0AE;
+}
+
+
