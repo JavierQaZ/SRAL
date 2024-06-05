@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from ..service.rol_service import add_rol_service, editar_rol_service, delete_rol_service
+from ..service.rol_service import add_rol_service, editar_rol_service, delete_rol_service,obtener_roles
 
 bp = Blueprint('rol_Blueprint', __name__)
 
@@ -11,7 +11,7 @@ def add_rol():
         # Validación de datos
         required_fields = {
             'nombre_rol': str,
-            'sueldoPorHora_rol': float
+            'sueldoPorHora_rol': int
         }
         
         for field, field_type in required_fields.items():
@@ -73,4 +73,16 @@ def delete_rol():
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
+    
+@bp.route('/get', methods=['GET'])
+def get_roles():
+    roles = obtener_roles()
+    if roles:
+        roles_list = [{
+            'codigo_rol': rol[0],
+            'nombre_rol': rol[1],
+            'sueldoPorHora_rol': float(rol[2])  # Convertir a float si es necesario
+        } for rol in roles]
+        return jsonify(roles_list), 200
+    else:
+        return jsonify({"error": "Error al obtener roles"}), 500

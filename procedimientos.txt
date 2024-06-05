@@ -362,3 +362,87 @@ BEGIN
 END//
 
 DELIMITER ;
+
+
+---------------------------------------------------------------------------
+Trigger para AFTER INSERT en registrosalida
+--------------------------------------------------------------------------
+
+DELIMITER $$
+
+CREATE TRIGGER actualizar_horas_sueldo_insert
+AFTER INSERT ON registrosalida
+FOR EACH ROW
+BEGIN
+    DECLARE horas_trabajadas DECIMAL(10,2);
+    DECLARE sueldo_hora DECIMAL(10,2);
+    DECLARE ultima_entrada DATETIME;
+
+    -- Obtener la última hora de entrada para el empleado
+    SELECT MAX(horaIngreso_registro)
+    INTO ultima_entrada
+    FROM registroentrada
+    WHERE rut_empleado = NEW.rut_empleado;
+
+    -- Calcular las horas trabajadas desde la última entrada hasta la nueva salida
+    IF ultima_entrada IS NOT NULL THEN
+        SET horas_trabajadas = TIME_TO_SEC(TIMEDIFF(NEW.horaSalida_registro, ultima_entrada)) / 3600;
+
+        -- Obtener el sueldo por hora del empleado
+        SELECT r.sueldoPorHora_rol
+        INTO sueldo_hora
+        FROM empleados e
+        JOIN rol r ON e.codigo_rol = r.codigo_rol
+        WHERE e.rut_empleado = NEW.rut_empleado;
+
+        -- Actualizar las horas trabajadas y el sueldo total del empleado
+        UPDATE empleados
+        SET totalHorasTrabajadas_empleado = totalHorasTrabajadas_empleado + horas_trabajadas,
+            sueldoTotal_empleado = sueldoTotal_empleado + (horas_trabajadas * sueldo_hora)
+        WHERE rut_empleado = NEW.rut_empleado;
+    END IF;
+END$$
+
+DELIMITER ;
+
+
+---------------------------------------------------------------------------------------------------
+Trigger para AFTER UPDATE en registrosalida
+---------------------------------------------------------------------------------------------------
+
+DELIMITER $$
+
+CREATE TRIGGER actualizar_horas_sueldo_update
+AFTER UPDATE ON registrosalida
+FOR EACH ROW
+BEGIN
+    DECLARE horas_trabajadas DECIMAL(10,2);
+    DECLARE sueldo_hora DECIMAL(10,2);
+    DECLARE ultima_entrada DATETIME;
+
+    -- Obtener la última hora de entrada para el empleado
+    SELECT MAX(horaIngreso_registro)
+    INTO ultima_entrada
+    FROM registroentrada
+    WHERE rut_empleado = NEW.rut_empleado;
+
+    -- Calcular las horas trabajadas desde la última entrada hasta la nueva salida
+    IF ultima_entrada IS NOT NULL THEN
+        SET horas_trabajadas = TIME_TO_SEC(TIMEDIFF(NEW.horaSalida_registro, ultima_entrada)) / 3600;
+
+        -- Obtener el sueldo por hora del empleado
+        SELECT r.sueldoPorHora_rol
+        INTO sueldo_hora
+        FROM empleados e
+        JOIN rol r ON e.codigo_rol = r.codigo_rol
+        WHERE e.rut_empleado = NEW.rut_empleado;
+
+        -- Actualizar las horas trabajadas y el sueldo total del empleado
+        UPDATE empleados
+        SET totalHorasTrabajadas_empleado = totalHorasTrabajadas_empleado + horas_trabajadas,
+            sueldoTotal_empleado = sueldoTotal_empleado + (horas_trabajadas * sueldo_hora)
+        WHERE rut_empleado = NEW.rut_empleado;
+    END IF;
+END$$
+
+DELIMITER ;

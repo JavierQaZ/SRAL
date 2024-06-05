@@ -59,10 +59,27 @@ def delete_rol_service(codigo_rol):
         # Manejar errores
         print("Error al eliminar rol:", e)
         raise e
-       
-        
-#{
-#    "nombre_rol": "Limpieza",
-#    "sueldoPorHora_rol": 20.50
-#}
+    
+
+def obtener_roles():
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        # Ejecutar la consulta SQL para obtener todos los roles
+        cursor.execute("SELECT * FROM rol")
+
+        # Obtener los resultados
+        roles = cursor.fetchall()
+
+        # Cerrar conexión y cursor
+        cursor.close()
+        connection.close()
+
+        return roles
+    
+    except Exception as e:
+        # Manejar errores
+        print("Error al obtener roles:", e)
+        return None
 
