@@ -113,7 +113,9 @@ function Empleado() {
                             onChange={handleOnChangeRol}
                         >
                             <option value='-1'>Seleccione el Rol</option>
-                            <option key={rol.codigo_rol} value={rol.codigo_rol}>{rol.nombre_rol}</option>
+                            {roles.map((rol) => (
+                                <option key={rol.codigo_rol} value={rol.codigo_rol}>{rol.nombre_rol}</option>
+                            ))}
                         </select>
                     </label>
                 </div>

@@ -34,7 +34,7 @@ function VisualizacionDatos() {
                             {datos.map((item) => (
                                 <tr key={item.rut_empleado}>
                                     <td>{item.rut_empleado}</td>
-                                    <td>{item.nombre_empleado}</td>
+                                    <td>{item.nombre_empleado} {item.apellidos_empleado}</td>
                                     <td>{item.codigo_rol}</td>
                                     <td>{item.totalHorasTrabajadas_empleado}</td>
                                     <td>{item.sueldoTotal_empleado}</td>
