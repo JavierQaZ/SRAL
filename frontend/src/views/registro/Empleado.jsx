@@ -11,7 +11,7 @@ function Empleado() {
     const [roles, setRoles] = useState([])
 
     useEffect(() => {
-        axios.get('http://localhost:5000/roles/get')
+        axios.get('http://localhost:5000/rol/get')
             .then((response) => {
                 setRoles(response.data)
             })
@@ -113,7 +113,9 @@ function Empleado() {
                             onChange={handleOnChangeRol}
                         >
                             <option value='-1'>Seleccione el Rol</option>
-                            <option key={rol.codigo_rol} value={rol.codigo_rol}>{rol.nombre_rol}</option>
+                            {roles.map((rol) => (
+                                <option key={rol.codigo_rol} value={rol.codigo_rol}>{rol.nombre_rol}</option>
+                            ))}
                         </select>
                     </label>
                 </div>
