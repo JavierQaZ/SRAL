@@ -11,7 +11,7 @@ function Empleado() {
     const [roles, setRoles] = useState([])
 
     useEffect(() => {
-        axios.get('http://localhost:5000/roles/get')
+        axios.get('http://localhost:5000/rol/get')
             .then((response) => {
                 setRoles(response.data)
             })

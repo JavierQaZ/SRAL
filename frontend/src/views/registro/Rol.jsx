@@ -21,7 +21,7 @@ function Roles() {
         e.preventDefault();
         const nuevoRol = {
             "nombre_rol": nombreRol,
-            "sueldoPorHora_rol": salarioRol
+            "sueldoPorHora_rol": parseFloat(salarioRol)
         }
 
         axios.post('http://localhost:5000/rol/add', nuevoRol)

@@ -10,6 +10,9 @@ function VisualizacionDatos() {
             .then(response => {
                 setDatos(response.data);
             })
+            .catch(error => {
+                console.error('Error recolectando datos: ', error)
+            })
     }, []);
 
     return (
