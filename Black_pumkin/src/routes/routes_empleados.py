@@ -112,8 +112,8 @@ def obtener_kpi():
         # Validación de datos
         required_fields = ['rut_empleado', 'mes', 'anio']
         for field in required_fields:
-            if (field not in data):
-                return jsonify({"error": f"Falta el campo {field}"}), 400
+            if field not in data:
+                return jsonify({"error": f"Falta el campo '{field}'"}), 400
 
         rut_empleado = data['rut_empleado']
         mes = data['mes']
@@ -127,7 +127,7 @@ def obtener_kpi():
             "rut_empleado": resultado["rut_empleado"],
             "mes": resultado["mes"],
             "anio": resultado["anio"],
-            "sueldo_total": resultado["sueldo_total"],
+            "sueldo_mensual": resultado["sueldo_total"],  # Aquí utilizamos sueldo_mensual en lugar de sueldo_total
             "horas_trabajadas": resultado["horas_trabajadas"],
             "puntualidad_promedio": resultado["puntualidad_promedio"],
             "tasa_asistencia": resultado["tasa_asistencia"],
