@@ -9,6 +9,8 @@ import RegistroSalida from "./RegistroSalida.jsx";
 import VisualizacionDatos from "./VisualizacionDatos.jsx";
 import Registro from "./Registro.jsx";
 import Gestion from "./Gestion.jsx";
+import EditarDatos from "./EditarDatos.jsx";
+import BorrarDatos from "./BorrarDatos.jsx"
 
 function Home(){
     return(
@@ -41,6 +43,12 @@ function Home(){
                             <Link to="gestion" className="side-item">
                                 Gestión
                             </Link>
+                            <Link to="editarDatos" className="side-item">
+                                Editar Datos
+                            </Link>
+                            <Link to="borrarDatos" className="side-item">
+                                Borrar Datos
+                            </Link>
                         </div>
                     </div>
 
@@ -52,6 +60,8 @@ function Home(){
                             <Route path="/visualizacionDatos" element={<VisualizacionDatos/>}></Route>
                             <Route path="/registro/*" element={<Registro/>}></Route>
                             <Route path="/gestion" element={<Gestion/>}></Route>
+                            <Route path="/editarDatos/*" element={<EditarDatos/>}></Route>
+                            <Route path="/borrarDatos/*" element={<BorrarDatos/>}></Route>
                         </Routes>
                     </main>
                 </div>

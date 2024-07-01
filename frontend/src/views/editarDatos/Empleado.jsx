@@ -1,13 +1,12 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect} from "react";
 import axios from "axios";
 
 function Empleado() {
-
     const [rut, setRut] = useState("")
     const [nombre, setNombre] = useState("")
     const [apellidos, setApellidos] = useState("")
     const [rol, setRol] = useState("-1")
-    const [exitoRegistrarEmpleado, setExitoRegistrarEmpleado] = useState("")
+    const [exitoEditarEmpleado, setExitoEditarEmpleado] = useState("")
     const [roles, setRoles] = useState([])
 
     useEffect(() => {
@@ -43,32 +42,32 @@ function Empleado() {
         e.preventDefault();
 
         if (rut === "" || nombre === "" || apellidos === "" || rol === "-1") {
-            setExitoRegistrarEmpleado("Todos los campos son obligatorios")
+            setExitoEditarEmpleado("Todos los campos son obligatorios")
             return;
         }
 
-        const nuevoEmpleado = {
+        const editarEmpleado = {
             "rut_empleado": rut,
             "nombre_empleado": nombre,
             "apellidos_empleado": apellidos,
             "codigo_rol": rol /* REVISAR */
         }
 
-        axios.post('http://localhost:5000/empleados/add', nuevoEmpleado)
+        axios.post('http://localhost:5000/empleados/put', editarEmpleado)
             .then((response) => {
-                setExitoRegistrarEmpleado("Empleado registrado exitosamente")
-                console.log("Empleado registrado exitosamente", response.data)
+                setExitoEditarEmpleado("Datos editados exitosamente")
+                console.log("Datos del empleado editados exitosamente", response.data)
             })
             .catch ((error) => {
-                setExitoRegistrarEmpleado("Error al registrar el empleado")
-                console.error("Error al registrar el empleado: ", error)
+                setExitoEditarEmpleado("Error al editar el empleado")
+                console.error("Error al editar los datos del empleado: ", error)
             });
     }
 
-    const ping = exitoRegistrarEmpleado ? (
+    const ping = exitoEditarEmpleado ? (
         <div className='mt-3'>
             <p>
-                {exitoRegistrarEmpleado}: <br/>
+                {exitoEditarEmpleado}: <br/>
                 {nombre} {apellidos}
             </p>
         </div>
@@ -78,7 +77,7 @@ function Empleado() {
         <>
             <form onSubmit={handleSubmit}>
                 <div className='d-flex flex-column'>
-                    <h4>Registro de Empleados</h4>
+                    <h4>Editar Datos de Empleado</h4>
                     <label className="form-label mt-3">
                         RUT
                         <input type="text" className="form-control"
@@ -121,7 +120,7 @@ function Empleado() {
                 </div>
 
                 <button type="submit" className="btn btn-warning ms-4 mt-3 text-white">
-                    Registrar Empleado
+                    Confirmar cambios
                 </button>
                 <br/>
                 <br/>

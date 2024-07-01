@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import axios from "axios";
 
 function Roles() {
 
     const [nombreRol, setNombreRol] = useState("")
     const [salarioRol, setSalarioRol] = useState("")
-    const [exitoRegistrarRol, setExitoRegistrarRol] = useState("")
+    const [exitoEditarRol, setExitoEditarRol] = useState("")
 
     const handleOnChangeNombreRol = (e) => {
         console.log(e.target.value)
@@ -24,21 +24,21 @@ function Roles() {
             "sueldoPorHora_rol": parseFloat(salarioRol)
         }
 
-        axios.post('http://localhost:5000/rol/add', nuevoRol)
+        axios.post('http://localhost:5000/rol/put', nuevoRol)
             .then((response) => {
-                setExitoRegistrarRol("Rol registrado exitosamente")
-                console.log("Rol registrado exitosamente", response.data)
+                setExitoEditarRol("Rol editado exitosamente")
+                console.log("Rol editado exitosamente", response.data)
             })
             .catch ((error) => {
-                setExitoRegistrarRol("Error al registrar el rol")
-                console.error("Error al registrar el rol: ", error)
+                setExitoEditarRol("Error al editar el rol")
+                console.error("Error al editar el rol: ", error)
             });
     }
 
-    const ping = exitoRegistrarRol ? (
+    const ping = exitoEditarRol ? (
         <div className='mt-3'>
             <p>
-                {exitoRegistrarRol}: <br/>
+                {exitoEditarRol}: <br/>
                 {nombreRol}
             </p>
         </div>
@@ -47,7 +47,7 @@ function Roles() {
     return (
         <>
             <form onSubmit={handleSubmit}>
-                <h4>Registro de Rol</h4>
+                <h4>Editar Rol</h4>
                 <div className='d-flex flex-column'>
 
                     <label className='form-label mt-3'>
@@ -68,7 +68,7 @@ function Roles() {
                 </div>
 
                 <button type="submit" className="btn btn-warning ms-4 mt-3 text-white">
-                    Registrar Rol
+                    Confirmar cambios
                 </button>
                 <br/>
                 <br/>
