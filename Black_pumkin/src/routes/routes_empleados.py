@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from ..service.empleado_service import agregar_empleado_service,editar_empleado_service,delete_empleado_service, obtener_empleados_service
+from ..service.kpi_empleado_service import obtener_kpi_service
 
 bp = Blueprint('empleados_Blueprint', __name__)
 
@@ -97,6 +98,43 @@ def obtener_empleados():
             })
         
         return jsonify(empleados_list), 200
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+
+@bp.route('/kpi', methods=['POST'])
+def obtener_kpi():
+    try:
+        data = request.get_json()
+        
+        # Validación de datos
+        required_fields = ['rut_empleado', 'mes', 'anio']
+        for field in required_fields:
+            if (field not in data):
+                return jsonify({"error": f"Falta el campo {field}"}), 400
+
+        rut_empleado = data['rut_empleado']
+        mes = data['mes']
+        anio = data['anio']
+        
+        # Llamada al servicio para obtener KPIs
+        resultado = obtener_kpi_service(rut_empleado, mes, anio)
+        
+        # Asegurarse de que el JSON devuelto esté en el formato correcto
+        response = {
+            "rut_empleado": resultado["rut_empleado"],
+            "mes": resultado["mes"],
+            "anio": resultado["anio"],
+            "sueldo_total": resultado["sueldo_total"],
+            "horas_trabajadas": resultado["horas_trabajadas"],
+            "puntualidad_promedio": resultado["puntualidad_promedio"],
+            "tasa_asistencia": resultado["tasa_asistencia"],
+            "indice_retraso": resultado["indice_retraso"]
+        }
+        
+        return jsonify(response), 200
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500

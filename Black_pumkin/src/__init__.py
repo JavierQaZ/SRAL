@@ -12,10 +12,10 @@ def create_app(Config):
 
 
     # Configurar CORS
-    CORS(app, resources={"/empleados/*": {"origins": "http://localhost:5173", "methods": ["POST","PUT","GET"]}})
-    CORS(app, resources={"/rol/*": {"origins": "http://localhost:5173", "methods": ["POST","PUT","GET"]}})
-    CORS(app, resources={"/r_entrada/*": {"origins": "http://localhost:5173", "methods": ["POST","PUT","GET"]}})
-    CORS(app, resources={"/r_salida/*": {"origins": "http://localhost:5173", "methods": ["POST","PUT","GET"]}})
+    CORS(app, resources={"/empleados/*": {"origins": "http://localhost:5000", "methods": ["POST","PUT","GET"]}})
+    CORS(app, resources={"/rol/*": {"origins": "http://localhost:5000", "methods": ["POST","PUT","GET"]}})
+    CORS(app, resources={"/r_entrada/*": {"origins": "http://localhost:5000", "methods": ["POST","PUT","GET"]}})
+    CORS(app, resources={"/r_salida/*": {"origins": "http://localhost:5000", "methods": ["POST","PUT","GET"]}})
    
 
     app.register_blueprint(routes_empleados.bp, url_prefix="/empleados")
