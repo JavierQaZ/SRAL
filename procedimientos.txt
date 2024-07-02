@@ -446,3 +446,48 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Procedimientos 30-06
+
+
+-----------------------------------------------------------------------
+
+
+DELIMITER //
+
+CREATE PROCEDURE calcular_costo_total_por_rol(IN mes INT, IN anio INT)
+BEGIN
+    -- Declaración de variables
+    DECLARE inicio_mes DATETIME;
+    DECLARE fin_mes DATETIME;
+
+    -- Calcular las fechas de inicio y fin del mes especificado
+    SET inicio_mes = STR_TO_DATE(CONCAT(anio, '-', mes, '-01'), '%Y-%m-%d');
+    SET fin_mes = LAST_DAY(inicio_mes);
+
+    -- Calcular el costo total por rol
+    SELECT r.codigo_rol, r.nombre_rol, SUM(TIMESTAMPDIFF(HOUR, e.horaIngreso_registro, s.horaSalida_registro) * r.sueldoPorHora_rol) AS costo_total
+    FROM rol r
+    JOIN empleados emp ON emp.codigo_rol = r.codigo_rol
+    JOIN registroentrada e ON e.rut_empleado = emp.rut_empleado
+    JOIN registrosalida s ON s.rut_empleado = emp.rut_empleado
+    WHERE e.horaIngreso_registro BETWEEN inicio_mes AND fin_mes
+      AND s.horaSalida_registro BETWEEN inicio_mes AND fin_mes
+    GROUP BY r.codigo_rol, r.nombre_rol;
+END //
+
+DELIMITER ;

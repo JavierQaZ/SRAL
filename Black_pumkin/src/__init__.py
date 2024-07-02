@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
-from .routes import routes_empleados,routes_rol , routes_r_entrada, routes_r_salida
+from .routes import routes_empleados,routes_rol , routes_r_entrada, routes_r_salida, routes_gestionkpi
 
 
 app = Flask(__name__)
@@ -16,12 +16,13 @@ def create_app(Config):
     CORS(app, resources={"/rol/*": {"origins": "http://localhost:5000", "methods": ["POST","PUT","GET"]}})
     CORS(app, resources={"/r_entrada/*": {"origins": "http://localhost:5000", "methods": ["POST","PUT","GET"]}})
     CORS(app, resources={"/r_salida/*": {"origins": "http://localhost:5000", "methods": ["POST","PUT","GET"]}})
+    CORS(app, resources={"/kpi*": {"origins": "http://localhost:5000", "methods": ["POST","PUT","GET"]}})
    
 
     app.register_blueprint(routes_empleados.bp, url_prefix="/empleados")
     app.register_blueprint(routes_rol.bp, url_prefix="/rol")
     app.register_blueprint(routes_r_entrada.bp, url_prefix="/r_entrada")
     app.register_blueprint(routes_r_salida.bp, url_prefix="/r_salida")
-    
+    app.register_blueprint(routes_gestionkpi.bp, url_prefix="/kpi")
     
     return app
