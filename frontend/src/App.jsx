@@ -1,16 +1,18 @@
 import React from "react";
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import Home from './views/Home.jsx';
+import Login from "./views/Login.jsx";
 
 function App() {
   return (
     <Routes>
       {/* Redirigir de la raíz a /home */}
-      <Route path ="*" element={<Home />}>
-      </Route>
+      <Route path ="/" element={<Navigate to='login'/>}/>
+
+      <Route path ="/login" element = {<Login/>} ></Route>
 
       {/* Definir la ruta /home */}
-      <Route path ="/home/*" component={<Home />}/>
+      <Route path ="/home/*" element={<Home />}/>
 
       {/* agregar rutas */}
     </Routes>
