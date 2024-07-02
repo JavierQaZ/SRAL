@@ -11,14 +11,14 @@ class TestAddEmpleadoRoute(unittest.TestCase):
 
     def test_add_empleado_route(self):
         # Configura el contexto de la aplicación para la prueba
-        with self.app.test_request_context('/add_empleados/', method='POST', 
+        with self.app.test_request_context('empleado/add', method='POST', 
                                            json={
-                                               'RUT': '12243672-9',
-                                               'Nombre': 'Juan',
+                                               'RUT': '12345671-9',
+                                               'Nombre': 's',
                                                'Apellidos': 'Pérez',
                                                'CodRol': '1',
-                                               'TotalHoras': 40,
-                                               'SueldoTotal': 1000
+                                               'TotalHoras': 0,
+                                               'SueldoTotal': 0
                                            }):
             # Llama a la función de la ruta directamente
             response = add_empleado()

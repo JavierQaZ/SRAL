@@ -1,10 +1,11 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 from ..service.empleado_service import agregar_empleado_service,editar_empleado_service,delete_empleado_service, obtener_empleados_service
 from ..service.kpi_empleado_service import obtener_kpi_service
-
 bp = Blueprint('empleados_Blueprint', __name__)
 
 @bp.route('/add', methods=['POST'])
+@jwt_required()
 def add_empleado():
     try:
         data = request.get_json()
@@ -32,6 +33,7 @@ def add_empleado():
 
 
 @bp.route('/edit', methods=['PUT'])
+@jwt_required()
 def edit_empleado():
     try:
         data = request.get_json()
@@ -59,6 +61,7 @@ def edit_empleado():
     
 
 @bp.route('/delete', methods=['DELETE'])
+@jwt_required()
 def delete_empleado():
     try:
         data = request.get_json()
@@ -78,6 +81,7 @@ def delete_empleado():
         return jsonify({"error": str(e)}), 500
     
 @bp.route('/get', methods=['GET'])
+@jwt_required()
 def obtener_empleados():
     try:
         empleados = obtener_empleados_service()
@@ -105,6 +109,7 @@ def obtener_empleados():
 
 
 @bp.route('/kpi', methods=['POST'])
+@jwt_required()
 def obtener_kpi():
     try:
         data = request.get_json()
