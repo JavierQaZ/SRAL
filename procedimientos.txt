@@ -474,20 +474,171 @@ BEGIN
     -- Declaración de variables
     DECLARE inicio_mes DATETIME;
     DECLARE fin_mes DATETIME;
+    DECLARE costo_total DECIMAL(10, 2);
+    DECLARE horas_trabajadas DECIMAL(10, 2);
+
+    -- Calcular las fechas de inicio y fin del mes especificado
+    SET inicio_mes = STR_TO_DATE(CONCAT(anio, '-', LPAD(mes, 2, '0'), '-01'), '%Y-%m-%d');
+    SET fin_mes = LAST_DAY(inicio_mes);
+
+    -- Calcular el costo total por rol en el mes especificado
+    SELECT r.codigo_rol, r.nombre_rol, 
+           SUM(TIMESTAMPDIFF(HOUR, e.horaIngreso_registro, s.horaSalida_registro) * r.sueldoPorHora_rol) AS costo_total,
+           SUM(TIMESTAMPDIFF(HOUR, e.horaIngreso_registro, s.horaSalida_registro)) AS horas_trabajadas
+    FROM rol r
+    JOIN empleados emp ON emp.codigo_rol = r.codigo_rol
+    JOIN registroentrada e ON e.rut_empleado = emp.rut_empleado
+    JOIN registrosalida s ON s.rut_empleado = emp.rut_empleado AND DATE(e.horaIngreso_registro) = DATE(s.horaSalida_registro)
+    WHERE e.horaIngreso_registro BETWEEN inicio_mes AND fin_mes
+      AND s.horaSalida_registro BETWEEN inicio_mes AND fin_mes
+    GROUP BY r.codigo_rol, r.nombre_rol;
+
+    -- Devolver el resultado
+    SELECT r.codigo_rol, r.nombre_rol, horas_trabajadas, costo_total
+    FROM rol r
+    JOIN empleados emp ON emp.codigo_rol = r.codigo_rol
+    LEFT JOIN (
+        SELECT e.rut_empleado, 
+               SUM(TIMESTAMPDIFF(HOUR, e.horaIngreso_registro, s.horaSalida_registro)) AS horas_trabajadas
+        FROM registroentrada e
+        JOIN registrosalida s ON e.rut_empleado = s.rut_empleado AND DATE(e.horaIngreso_registro) = DATE(s.horaSalida_registro)
+        WHERE MONTH(e.horaIngreso_registro) = mes AND YEAR(e.horaIngreso_registro) = anio
+        GROUP BY e.rut_empleado
+    ) AS horas_emp ON horas_emp.rut_empleado = emp.rut_empleado
+    LEFT JOIN (
+        SELECT e.rut_empleado, 
+               SUM(TIMESTAMPDIFF(HOUR, e.horaIngreso_registro, s.horaSalida_registro) * r.sueldoPorHora_rol) AS costo_total
+        FROM registroentrada e
+        JOIN registrosalida s ON e.rut_empleado = s.rut_empleado AND DATE(e.horaIngreso_registro) = DATE(s.horaSalida_registro)
+        JOIN empleados emp ON emp.rut_empleado = e.rut_empleado
+        JOIN rol r ON emp.codigo_rol = r.codigo_rol
+        WHERE MONTH(e.horaIngreso_registro) = mes AND YEAR(e.horaIngreso_registro) = anio
+        GROUP BY e.rut_empleado
+    ) AS costo_emp ON costo_emp.rut_empleado = emp.rut_empleado
+    GROUP BY r.codigo_rol, r.nombre_rol;
+END //
+
+DELIMITER ;
+
+---------------------------------------------------------------------------------------------------------
+
+DELIMITER //
+
+CREATE PROCEDURE calcular_costo_total_por_mes(IN mes INT, IN anio INT)
+BEGIN
+    -- Declaración de variables
+    DECLARE inicio_mes DATETIME;
+    DECLARE fin_mes DATETIME;
+    DECLARE costo_total_sueldos DECIMAL(10, 2);
+    DECLARE horas_totales DECIMAL(10, 2);
+
+    -- Calcular las fechas de inicio y fin del mes especificado
+    SET inicio_mes = STR_TO_DATE(CONCAT(anio, '-', LPAD(mes, 2, '0'), '-01'), '%Y-%m-%d');
+    SET fin_mes = LAST_DAY(inicio_mes);
+
+    -- Calcular el costo total de sueldos y las horas totales en el mes especificado
+    SELECT COALESCE(SUM(horas_trabajadas * r.sueldoPorHora_rol), 0) AS costo_total_sueldos,
+           COALESCE(SUM(horas_trabajadas), 0) AS horas_totales
+    INTO costo_total_sueldos, horas_totales
+    FROM (
+        SELECT e.rut_empleado, SUM(TIMESTAMPDIFF(HOUR, e.horaIngreso_registro, s.horaSalida_registro)) AS horas_trabajadas
+        FROM registroentrada e
+        JOIN registrosalida s ON e.rut_empleado = s.rut_empleado AND DATE(e.horaIngreso_registro) = DATE(s.horaSalida_registro)
+        WHERE MONTH(e.horaIngreso_registro) = mes AND YEAR(e.horaIngreso_registro) = anio
+        GROUP BY e.rut_empleado
+    ) AS horas_empleados
+    JOIN empleados emp ON emp.rut_empleado = horas_empleados.rut_empleado
+    JOIN rol r ON emp.codigo_rol = r.codigo_rol;
+
+    -- Devolver el resultado
+    SELECT costo_total_sueldos AS costo_total_sueldos_mes, horas_totales AS horas_totales_mes;
+END //
+
+DELIMITER ;
+
+
+----------------------------------------------------------------------------------------------
+
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE calcular_costo_por_hora_trabajada(IN mes INT, IN anio INT)
+BEGIN
+    -- Declaración de variables
+    DECLARE inicio_mes DATETIME;
+    DECLARE fin_mes DATETIME;
+    DECLARE total_horas_trabajadas DECIMAL(10, 2);
+    DECLARE costo_total_sueldos DECIMAL(10, 2);
+    DECLARE costo_por_hora DECIMAL(10, 2);
 
     -- Calcular las fechas de inicio y fin del mes especificado
     SET inicio_mes = STR_TO_DATE(CONCAT(anio, '-', mes, '-01'), '%Y-%m-%d');
     SET fin_mes = LAST_DAY(inicio_mes);
 
-    -- Calcular el costo total por rol
-    SELECT r.codigo_rol, r.nombre_rol, SUM(TIMESTAMPDIFF(HOUR, e.horaIngreso_registro, s.horaSalida_registro) * r.sueldoPorHora_rol) AS costo_total
+    -- Calcular el total de horas trabajadas en el mes especificado
+    SELECT SUM(TIMESTAMPDIFF(HOUR, e.horaIngreso_registro, s.horaSalida_registro)) INTO total_horas_trabajadas
+    FROM registroentrada e
+    JOIN registrosalida s ON e.rut_empleado = s.rut_empleado
+    WHERE e.horaIngreso_registro BETWEEN inicio_mes AND fin_mes
+      AND s.horaSalida_registro BETWEEN inicio_mes AND fin_mes;
+
+    -- Calcular el costo total de sueldos en el mes especificado
+    SELECT SUM(TIMESTAMPDIFF(HOUR, e.horaIngreso_registro, s.horaSalida_registro) * r.sueldoPorHora_rol) INTO costo_total_sueldos
     FROM rol r
     JOIN empleados emp ON emp.codigo_rol = r.codigo_rol
     JOIN registroentrada e ON e.rut_empleado = emp.rut_empleado
     JOIN registrosalida s ON s.rut_empleado = emp.rut_empleado
     WHERE e.horaIngreso_registro BETWEEN inicio_mes AND fin_mes
-      AND s.horaSalida_registro BETWEEN inicio_mes AND fin_mes
-    GROUP BY r.codigo_rol, r.nombre_rol;
+      AND s.horaSalida_registro BETWEEN inicio_mes AND fin_mes;
+
+    -- Calcular el costo promedio por hora trabajada
+    SET costo_por_hora = costo_total_sueldos / total_horas_trabajadas;
+
+    -- Devolver el resultado
+    SELECT costo_por_hora AS costo_promedio_por_hora_trabajada;
+END //
+
+DELIMITER ;
+
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE calcular_promedio_horas_trabajadas(IN mes INT, IN anio INT)
+BEGIN
+    -- Declaración de variables
+    DECLARE inicio_mes DATE;
+    DECLARE fin_mes DATE;
+    DECLARE total_horas_trabajadas DECIMAL(10, 2);
+    DECLARE numero_empleados INT;
+    DECLARE promedio_horas DECIMAL(10, 2);
+
+    -- Calcular las fechas de inicio y fin del mes especificado
+    SET inicio_mes = STR_TO_DATE(CONCAT(anio, '-', mes, '-01'), '%Y-%m-%d');
+    SET fin_mes = LAST_DAY(inicio_mes);
+
+    -- Calcular el total de horas trabajadas en el mes especificado
+    SELECT SUM(TIMESTAMPDIFF(HOUR, e.horaIngreso_registro, s.horaSalida_registro)) INTO total_horas_trabajadas
+    FROM registroentrada e
+    JOIN registrosalida s ON e.rut_empleado = s.rut_empleado AND DATE(e.horaIngreso_registro) = DATE(s.horaSalida_registro)
+    WHERE e.horaIngreso_registro BETWEEN inicio_mes AND fin_mes
+      AND s.horaSalida_registro BETWEEN inicio_mes AND fin_mes;
+
+    -- Calcular el número de empleados únicos que trabajaron en el mes especificado
+    SELECT COUNT(DISTINCT e.rut_empleado) INTO numero_empleados
+    FROM registroentrada e
+    JOIN registrosalida s ON e.rut_empleado = s.rut_empleado
+    WHERE e.horaIngreso_registro BETWEEN inicio_mes AND fin_mes
+      AND s.horaSalida_registro BETWEEN inicio_mes AND fin_mes;
+
+    -- Calcular el promedio de horas trabajadas por empleado
+    SET promedio_horas = total_horas_trabajadas / numero_empleados;
+
+    -- Devolver el resultado
+    SELECT promedio_horas AS promedio_horas_trabajadas;
 END //
 
 DELIMITER ;
