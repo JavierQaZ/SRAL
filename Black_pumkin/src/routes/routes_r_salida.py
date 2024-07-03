@@ -1,10 +1,13 @@
 from flask import Blueprint, request, jsonify
 from ..service.r_salida_service import add_r_salida_service,edit_r_salida_service,delete_r_salida_service
+from flask_jwt_extended import jwt_required
+
 
 bp = Blueprint('r_salida_Blueprint', __name__)
 
 
 @bp.route('/add', methods=['POST'])
+@jwt_required()
 def add_r_salida():
     try:
         data = request.get_json()
@@ -32,6 +35,7 @@ def add_r_salida():
     
 
 @bp.route('/edit', methods=['PUT'])
+@jwt_required()
 def edit_r_salida():
     try:
         data = request.get_json()
@@ -67,6 +71,7 @@ def edit_r_salida():
         return jsonify({"error": str(e)}), 500
     
 @bp.route('/delete', methods=['DELETE'])
+@jwt_required()
 def delete_r_salida():
     try:
         data = request.get_json()

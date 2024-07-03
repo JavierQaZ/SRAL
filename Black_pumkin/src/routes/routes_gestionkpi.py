@@ -1,10 +1,11 @@
 from flask import Blueprint, request, jsonify
 from ..service.gestionkpi_service import obtener_kpi_service
-
+from flask_jwt_extended import jwt_required
 
 bp = Blueprint('kpi_Blueprint', __name__)
 
 @bp.route('/gestion', methods=['POST'])
+@jwt_required()
 def obtener_kpi():
     try:
         data = request.get_json()
