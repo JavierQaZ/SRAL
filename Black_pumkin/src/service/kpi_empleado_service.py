@@ -1,65 +1,47 @@
-# File: service/kpi_service.py
-
-# File: service/kpi_service.py
-
 from ..database.db_conección import get_connection
+from decimal import Decimal, ROUND_HALF_UP
 
-def obtener_kpi_service(rut_empleado, mes, anio):
+def obtener_kpi_service(mes, anio):
     try:
         connection = get_connection()
         cursor = connection.cursor()
 
-        # Llamar al procedimiento almacenado para calcular el sueldo mensual
-        cursor.callproc('calcular_sueldo_mensual', (rut_empleado, mes, anio, 0))
-        
-        # Obtener el resultado del procedimiento almacenado
-        cursor.execute('SELECT @_calcular_sueldo_mensual_3')
-        sueldo_mensual = cursor.fetchone()[0]
-
-        # Llamar al procedimiento almacenado para calcular las horas trabajadas
-        cursor.callproc('calcular_horas_trabajadas', (rut_empleado, mes, anio, 0))
-        
-        # Obtener el resultado del procedimiento almacenado
-        cursor.execute('SELECT @_calcular_horas_trabajadas_3')
-        horas_trabajadas = cursor.fetchone()[0]
-
-        # Llamar al procedimiento almacenado para calcular la puntualidad promedio
-        cursor.callproc('calcular_puntualidad_promedio', (rut_empleado, mes, anio, 0))
-        
-        # Obtener el resultado del procedimiento almacenado
-        cursor.execute('SELECT @_calcular_puntualidad_promedio_3')
-        puntualidad_promedio = cursor.fetchone()[0]
-
-        # Llamar al procedimiento almacenado para calcular la tasa de asistencia
-        cursor.callproc('calcular_tasa_asistencia', (rut_empleado, mes, anio, 0))
-        
-        # Obtener el resultado del procedimiento almacenado
-        cursor.execute('SELECT @_calcular_tasa_asistencia_3')
-        tasa_asistencia = cursor.fetchone()[0]
-
-        # Llamar al procedimiento almacenado para calcular el índice de retraso
-        cursor.callproc('calcular_indice_retraso', (rut_empleado, mes, anio, 0))
-        
-        # Obtener el resultado del procedimiento almacenado
-        cursor.execute('SELECT @_calcular_indice_retraso_3')
-        indice_retraso = cursor.fetchone()[0]
+        # Llamar al procedimiento almacenado para obtener KPIs por mes y año
+        cursor.callproc('obtener_kpis_por_mes', (mes, anio))
+        kpis_totales = cursor.fetchall()
 
         # Cerrar conexión y cursor
         cursor.close()
         connection.close()
 
-        return {
-            "rut_empleado": rut_empleado,
+        # Añadir nombres de los datos y formatear puntualidad promedio
+        kpis_nombres = {
             "mes": mes,
             "anio": anio,
-            "sueldo_total": sueldo_mensual,
-            "horas_trabajadas": horas_trabajadas,
-            "puntualidad_promedio": puntualidad_promedio,
-            "tasa_asistencia": tasa_asistencia,
-            "indice_retraso": indice_retraso
+            "datos": []
         }
+
+        for kpi in kpis_totales:
+            # Convertir puntualidad_promedio a Decimal y formatear como cadena con 4 decimales
+            puntualidad_promedio_decimal = Decimal(kpi[8]).quantize(Decimal('0.0000'), rounding=ROUND_HALF_UP)
+            puntualidad_promedio_str = f"{puntualidad_promedio_decimal}"
+
+            kpi_dict = {
+                "rut_empleado": kpi[0],
+                "nombre_empleado": kpi[1],
+                "apellidos_empleado": kpi[2],
+                "rol": kpi[3],
+                "sueldo_total": f"{kpi[6]:.2f}",
+                "horas_trabajadas": f"{kpi[7]}",
+                "puntualidad_promedio": puntualidad_promedio_str,
+                "tasa_asistencia": f"{kpi[9]:.4f}",
+                "indice_retraso": f"{kpi[10]:.4f}"
+            }
+            kpis_nombres["datos"].append(kpi_dict)
+
+        return kpis_nombres
 
     except Exception as e:
         # Manejar errores
-        print("Error al obtener KPI:", e)
+        print(f"Error al obtener KPIs: {str(e)}")
         raise

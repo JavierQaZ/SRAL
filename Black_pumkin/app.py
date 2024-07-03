@@ -8,7 +8,7 @@ app = create_app(configuration)
 
 # Configurar JWT
 app.config['JWT_SECRET_KEY'] = 'tu_secreto_aqui'  # Cambia esto por una clave secreta segura
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=1)  # Ejemplo: token expira en 1 hora
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=60)  # Ejemplo: token expira en 1 hora
 jwt = JWTManager(app)
 
 if __name__ == '__main__':

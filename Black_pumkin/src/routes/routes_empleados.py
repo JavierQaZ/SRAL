@@ -107,39 +107,30 @@ def obtener_empleados():
         return jsonify({"error": str(e)}), 500
     
 
-
-@bp.route('/kpi', methods=['POST'])
+@bp.route('kpi', methods=['POST'])
 @jwt_required()
 def obtener_kpi():
     try:
         data = request.get_json()
         
         # Validación de datos
-        required_fields = ['rut_empleado', 'mes', 'anio']
+        required_fields = ['mes', 'anio']
         for field in required_fields:
             if field not in data:
                 return jsonify({"error": f"Falta el campo '{field}'"}), 400
 
-        rut_empleado = data['rut_empleado']
         mes = data['mes']
         anio = data['anio']
         
-        # Llamada al servicio para obtener KPIs
-        resultado = obtener_kpi_service(rut_empleado, mes, anio)
+        print(f"Obteniendo KPIs para mes: {mes}, año: {anio}")
         
-        # Asegurarse de que el JSON devuelto esté en el formato correcto
-        response = {
-            "rut_empleado": resultado["rut_empleado"],
-            "mes": resultado["mes"],
-            "anio": resultado["anio"],
-            "sueldo_mensual": resultado["sueldo_total"],  # Aquí utilizamos sueldo_mensual en lugar de sueldo_total
-            "horas_trabajadas": resultado["horas_trabajadas"],
-            "puntualidad_promedio": resultado["puntualidad_promedio"],
-            "tasa_asistencia": resultado["tasa_asistencia"],
-            "indice_retraso": resultado["indice_retraso"]
-        }
+        # Llamada al servicio para obtener KPIs de todos los empleados
+        kpis_totales = obtener_kpi_service(mes, anio)
         
-        return jsonify(response), 200
+        print(f"KPIs obtenidos: {kpis_totales}")
+        
+        return jsonify(kpis_totales), 200
     
     except Exception as e:
+        print(f"Error al obtener KPIs: {str(e)}")
         return jsonify({"error": str(e)}), 500
