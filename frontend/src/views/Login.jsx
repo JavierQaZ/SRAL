@@ -12,26 +12,25 @@ function Login() {
     const navigate = useNavigate();
 
     const handleClick = () => {
-        auth.login(rut, contrasena).then((userData) => {
-            try {
-                if (userData.success){
+        auth.login(rut, contrasena)
+            .then((userData) => {
+                if (userData && userData.success){
                     sessionStorage.setItem("auth", userData.token);
                     navigate("/home")
                 }
                 else {
                     console.log("Usuario inválido");
                     setExitoLogin("Error al iniciar sesión");
-                    navigate("/login")
                 }
-            }
-            catch (error) {
+            })
+            .catch ((error) => {
                 console.error("Error al intentar iniciar sesión: ", error)
-            }
-        })
+                setExitoLogin("Error al iniciar sesión")
+            })
     }
 
     return (
-        (sessionStorage.getItem("auth") != undefined)? (<Navigate to = "/home"/>): (<div className="container shadow login-container mt-4 ps-0 pe-0">
+        sessionStorage.getItem("auth") !== undefined ? (<Navigate to = "/home"/>): (<div className="container shadow login-container mt-4 ps-0 pe-0">
         <div className="row">
             <div className="col-md-6 order-md-1">
                 <img src="/big-vite.svg"/>
