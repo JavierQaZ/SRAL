@@ -12,11 +12,11 @@ function Empleado() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        axios.delete('http:localhost:5000/empleados/delete/${rut}')
-        .then((response) => {
+        axios.delete(`http://localhost:5000/empleados/delete/${rut}`)
+            .then((response) => {
             setExitoBorrarEmpleado("Empleado borrado exitosamente")
             console.log("Empleado borrado exitosamente", response.data)
-        })
+            })
         .catch ((error) => {
             setExitoBorrarEmpleado("Error al borrar el Empleado")
             console.error("Error al borrar el Empleado", error)

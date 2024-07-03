@@ -23,7 +23,7 @@ function Roles() {
     const handleSubmit = (e) => {
         e.preventDefault();
         /* verificar PK roles */
-        axios.delete('http:localhost:5000/roles/delete/${codigo_rol}')
+        axios.delete(`http:localhost:5000/roles/delete/${codigo_rol}`)
         .then((response) => {
             setExitoBorrarRol("Rol borrado exitosamente")
             console.log("Rol borrado exitosamente", response.data)

@@ -50,7 +50,7 @@ function Empleado() {
             "rut_empleado": rut,
             "nombre_empleado": nombre,
             "apellidos_empleado": apellidos,
-            "codigo_rol": rol /* REVISAR */
+            "codigo_rol": rol
         }
 
         axios.post('http://localhost:5000/empleados/put', editarEmpleado)
@@ -118,7 +118,6 @@ function Empleado() {
                         </select>
                     </label>
                 </div>
-
                 <button type="submit" className="btn btn-warning ms-4 mt-3 text-white">
                     Confirmar cambios
                 </button>

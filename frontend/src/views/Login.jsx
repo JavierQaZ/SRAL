@@ -5,14 +5,14 @@ import auth from "../context/auth.jsx"
 import "../styles/Login.css";
 
 function Login() {
-    const [user, setUser] = useState("");
-    const [password, setPassword] = useState("");
+    const [rut, setRut] = useState("");
+    const [contrasena, setContrasena] = useState("");
     const [exitoLogin, setExitoLogin] = useState("")
 
     const navigate = useNavigate();
 
     const handleClick = () => {
-        auth.login(user, password).then((userData) => {
+        auth.login(rut, contrasena).then((userData) => {
             try {
                 if (userData.success){
                     sessionStorage.setItem("auth", userData.token);
@@ -21,7 +21,7 @@ function Login() {
                 else {
                     console.log("Usuario inválido");
                     setExitoLogin("Error al iniciar sesión");
-                    navigate("login")
+                    navigate("/login")
                 }
             }
             catch (error) {
@@ -48,8 +48,8 @@ function Login() {
                         className="form-control"
                         id="username"
                         placeholder="Ingresa tu Usuario aquí"
-                        onChange={(e) => setUser(e.target.value)}
-                        value={user}
+                        onChange={(e) => setRut(e.target.value)}
+                        value={rut}
                     />
                 </div>
                 <div className="form-group">
@@ -61,8 +61,8 @@ function Login() {
                         className="form-control"
                         id="password"
                         placeholder="Ingresa tu contraseña aquí"
-                        onChange={(e) => setPassword(e.target.value)}
-                        value={password}
+                        onChange={(e) => setContrasena(e.target.value)}
+                        value={contrasena}
                     />
                 </div>
             </div>

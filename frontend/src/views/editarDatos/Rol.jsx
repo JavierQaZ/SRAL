@@ -30,12 +30,12 @@ function Roles() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const nuevoRol = {
+        const editarRol = {
             "nombre_rol": nombreRol,
             "sueldoPorHora_rol": parseFloat(salarioRol)
         }
 
-        axios.post('http://localhost:5000/rol/put', nuevoRol)
+        axios.post('http://localhost:5000/rol/put', editarRol)
             .then((response) => {
                 setExitoEditarRol("Rol editado exitosamente")
                 console.log("Rol editado exitosamente", response.data)

@@ -1,13 +1,16 @@
 import axios from "axios";
 
 const auth = {
-    login: async (user, password) => {
+    login: async (rut, contrasena) => {
         try {
             const userData = {
-                MODIFICAR: user, //modificar con bdd
-                MODIFICAR1: password //modificar bdd
+                rut_empleado: rut,
+                contrasena: contrasena
             };
-        } catch(error){
+
+            const resp = await axios.post("http://localhost:5000/login", userData)
+            return resp.data;
+        } catch(error) {
             console.log(error);
         }
     }
