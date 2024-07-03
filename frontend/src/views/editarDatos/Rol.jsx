@@ -3,7 +3,7 @@ import axios from "axios";
 
 function Roles() {
 
-    const [nombreRol, setNombreRol] = useState("")
+    const [codigoRol, setCodigoRol] = useState("")
     const [roles, setRoles] = useState([])
     const [salarioRol, setSalarioRol] = useState("")
     const [exitoEditarRol, setExitoEditarRol] = useState("")
@@ -18,9 +18,9 @@ function Roles() {
             })
     }, []);
 
-    const handleOnChangeNombreRol = (e) => {
+    const handleOnChangeCodigoRol = (e) => {
         console.log(e.target.value)
-        setNombreRol(e.target.value)
+        setCodigoRol(e.target.value)
     }
 
     const handleOnChangeSalarioRol = (e) => {
@@ -31,11 +31,11 @@ function Roles() {
     const handleSubmit = (e) => {
         e.preventDefault();
         const editarRol = {
-            "nombre_rol": nombreRol,
+            "codigo_rol": codigoRol,
             "sueldoPorHora_rol": parseFloat(salarioRol)
         }
 
-        axios.post('http://localhost:5000/rol/put', editarRol)
+        axios.put('http://localhost:5000/rol/edit', editarRol)
             .then((response) => {
                 setExitoEditarRol("Rol editado exitosamente")
                 console.log("Rol editado exitosamente", response.data)
@@ -50,7 +50,7 @@ function Roles() {
         <div className='mt-3'>
             <p>
                 {exitoEditarRol}: <br/>
-                {nombreRol}
+                {codigoRol}
             </p>
         </div>
     ): null;
@@ -67,8 +67,8 @@ function Roles() {
                         <select
                             className='custom-select'
                             id='inlineFormCustomSelectPref'
-                            value={nombreRol}
-                            onChange={handleOnChangeNombreRol}
+                            value={codigoRol}
+                            onChange={handleOnChangeCodigoRol}
                         >
                             <option value='-1'>Seleccione el Rol</option>
                             {roles.map((rol) => (

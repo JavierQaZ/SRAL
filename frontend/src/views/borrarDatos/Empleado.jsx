@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 function Empleado() {
 
@@ -12,7 +13,8 @@ function Empleado() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        axios.delete(`http://localhost:5000/empleados/delete/${rut}`)
+        
+        axios.delete(`http://localhost:5000/empleados/delete`,{data:{rut_empleado:rut}})
             .then((response) => {
             setExitoBorrarEmpleado("Empleado borrado exitosamente")
             console.log("Empleado borrado exitosamente", response.data)

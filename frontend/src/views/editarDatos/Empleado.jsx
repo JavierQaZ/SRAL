@@ -53,7 +53,7 @@ function Empleado() {
             "codigo_rol": rol
         }
 
-        axios.post('http://localhost:5000/empleados/put', editarEmpleado)
+        axios.put('http://localhost:5000/empleados/edit', editarEmpleado)
             .then((response) => {
                 setExitoEditarEmpleado("Datos editados exitosamente")
                 console.log("Datos del empleado editados exitosamente", response.data)
