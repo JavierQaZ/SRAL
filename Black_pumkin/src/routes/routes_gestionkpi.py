@@ -4,23 +4,20 @@ from flask_jwt_extended import jwt_required
 
 bp = Blueprint('kpi_Blueprint', __name__)
 
-@bp.route('/gestion', methods=['POST'])
-@jwt_required()
+@bp.route('/gestion', methods=['GET'])
+#@jwt_required()
 def obtener_kpi():
     try:
-        data = request.get_json()
+        # Obtener los parámetros de consulta desde la URL
+        mes = request.args.get('mes')
+        anio = request.args.get('anio')
         
         # Validación de datos
-        required_fields = ['mes', 'anio']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({"error": f"Falta el campo {field}"}), 400
-
-        mes = data['mes']
-        anio = data['anio']
+        if not mes or not anio:
+            return jsonify({"error": "Faltan los parámetros 'mes' y 'anio'"}), 400
         
-        # Llamada al servicio para obtener los KPIs
-        resultado = obtener_kpi_service(mes, anio)
+        # Llamar al servicio para obtener los KPIs
+        resultado = obtener_kpi_service(int(mes), int(anio))
         
         # Asegurarse de que el JSON devuelto esté en el formato correcto
         response = {

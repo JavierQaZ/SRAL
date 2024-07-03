@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required
 bp = Blueprint('r_entrada_Blueprint', __name__)
 
 @bp.route('/add', methods=['POST'])
-@jwt_required()
+#@jwt_required()
 def add_r_entrada():
     try:
         data = request.get_json()
@@ -35,7 +35,7 @@ def add_r_entrada():
 
 
 @bp.route('/edit', methods=['PUT'])
-@jwt_required()
+#@jwt_required()
 def edit_hora_ingreso():
     try:
         data = request.get_json()
@@ -72,7 +72,7 @@ def edit_hora_ingreso():
     
 
 @bp.route('/delete', methods=['DELETE'])
-@jwt_required()
+#@jwt_required()
 def delete_r_entrada():
     try:
         data = request.get_json()

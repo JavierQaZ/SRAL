@@ -21,13 +21,13 @@ def agregar_empleado_service(rut_empleado, nombre_empleado, apellidos_empleado, 
         print("Error al agregar empleado:", e)
         
         
-def editar_empleado_service(rut_empleado, nombre_empleado, apellidos_empleado, codigo_rol, TotalHoras, SueldoTotal):
+def editar_empleado_service(rut_empleado, nombre_empleado, apellidos_empleado, codigo_rol):
     try:
         connection = get_connection()
         cursor = connection.cursor()
 
         # Llamar al procedimiento almacenado para editar un empleado
-        cursor.callproc('editar_empleado', (rut_empleado, nombre_empleado, apellidos_empleado, codigo_rol, TotalHoras, SueldoTotal))
+        cursor.callproc('editar_empleado', (rut_empleado, nombre_empleado, apellidos_empleado, codigo_rol))
         
         # Commit para aplicar los cambios en la base de datos
         connection.commit()

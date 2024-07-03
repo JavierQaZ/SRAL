@@ -67,7 +67,7 @@ def generate_inserts(start_year, end_year, employee_id):
     return combined_sql, dias_no_trabajados
 
 # Generar los inserts para los años 2023 y 2024 para el empleado '12345678-9'
-combined_sql, dias_no_trabajados = generate_inserts(2023, 2024, '12345678-9')
+combined_sql, dias_no_trabajados = generate_inserts(2023, 2024, '20707702-0')
 
 # Guardar en archivo de texto
 with open('registros.sql', 'w') as file:

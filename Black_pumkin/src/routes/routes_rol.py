@@ -6,7 +6,7 @@ from flask_jwt_extended import jwt_required
 bp = Blueprint('rol_Blueprint', __name__)
 
 @bp.route('/add', methods=['POST'])
-@jwt_required()
+#@jwt_required()
 def add_rol():
     try:
         data = request.get_json()
@@ -36,23 +36,23 @@ def add_rol():
     
 
 @bp.route('/edit', methods=['PUT'])
-@jwt_required()
+#@jwt_required()
 def edit_rol():
     try:
         data = request.get_json()
         
         # Validación de datos
-        required_fields = ['codigo_rol', 'nombre_rol', 'sueldoPorHora_rol']
+        required_fields = ['codigo_rol', 'sueldoPorHora_rol']
         for field in required_fields:
             if field not in data:
                 return jsonify({"error": f"Falta el campo {field}"}), 400
 
         codigo_rol = data['codigo_rol']
-        nombre_rol = data['nombre_rol']
+    
         sueldoPorHora_rol = data['sueldoPorHora_rol']
         
         # Llamada al servicio para editar rol
-        editar_rol_service(codigo_rol, nombre_rol, sueldoPorHora_rol)
+        editar_rol_service(codigo_rol, sueldoPorHora_rol)
         
         return jsonify({"message": "Rol editado exitosamente"}), 200
     
@@ -60,7 +60,7 @@ def edit_rol():
         return jsonify({"error": str(e)}), 500
 
 @bp.route('/delete', methods=['DELETE'])
-@jwt_required()
+#@jwt_required()
 def delete_rol():
     try:
         data = request.get_json()
@@ -80,7 +80,7 @@ def delete_rol():
         return jsonify({"error": str(e)}), 500
     
 @bp.route('/get', methods=['GET'])
-@jwt_required()
+#@jwt_required()
 def get_roles():
     roles = obtener_roles()
     if roles:

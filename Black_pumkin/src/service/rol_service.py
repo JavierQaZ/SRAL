@@ -19,14 +19,14 @@ def add_rol_service(nombre_rol,sueldoPorHora_rol):
         # Manejar errores
         print("Error al agregar empleado:", e)
         
-def editar_rol_service(codigo_rol, nombre_rol, sueldoPorHora_rol):
+def editar_rol_service(codigo_rol, sueldoPorHora_rol):
     try:
         # Obtener la conexión a la base de datos
         connection = get_connection()
         cursor = connection.cursor()
 
         # Llamar al procedimiento almacenado para editar un rol
-        cursor.callproc('editar_rol', (codigo_rol, nombre_rol, sueldoPorHora_rol))
+        cursor.callproc('editar_rol', (codigo_rol, sueldoPorHora_rol))
         
         # Commit para aplicar los cambios en la base de datos
         connection.commit()
