@@ -649,171 +649,216 @@ DELIMITER ;
 Procedimientos 02-07-2024 Kpi por empleado
 
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `calcular_horas_trabajadas`(
-    IN p_rut_empleado VARCHAR(15),
+CREATE DEFINER=`root`@`localhost` PROCEDURE `obtener_kpis_por_mes`(
     IN p_mes INT,
-    IN p_anio INT,
-    OUT p_horas_trabajadas DECIMAL(10, 2)
+    IN p_anio INT
 )
 BEGIN
-    SELECT SUM(TIMESTAMPDIFF(HOUR, e.horaIngreso_registro, s.horaSalida_registro))
-    INTO p_horas_trabajadas
-    FROM registroentrada e
-    JOIN registrosalida s ON e.rut_empleado = s.rut_empleado AND DATE(e.horaIngreso_registro) = DATE(s.horaSalida_registro)
-    WHERE e.rut_empleado = p_rut_empleado AND MONTH(e.horaIngreso_registro) = p_mes AND YEAR(e.horaIngreso_registro) = p_anio;
-END$$
-DELIMITER ;
-
-DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `calcular_indice_retraso`(
-    IN p_rut_empleado VARCHAR(15),
-    IN p_mes INT,
-    IN p_anio INT,
-    OUT p_indice_retraso DECIMAL(5, 2)
-)
-BEGIN
-    DECLARE total_dias_laborables INT;
-    DECLARE total_retrasos INT;
-    
-    -- Contar el total de días laborables en el mes y año dados
-    SELECT COUNT(DISTINCT DATE(horaIngreso_registro)) INTO total_dias_laborables
-    FROM registroentrada
-    WHERE rut_empleado = p_rut_empleado
-        AND MONTH(horaIngreso_registro) = p_mes
-        AND YEAR(horaIngreso_registro) = p_anio;
-    
-    -- Contar los retrasos registrados (llegadas después de 30 minutos)
-    SELECT COUNT(*) INTO total_retrasos
-    FROM registroentrada
-    WHERE rut_empleado = p_rut_empleado
-        AND MONTH(horaIngreso_registro) = p_mes
-        AND YEAR(horaIngreso_registro) = p_anio
-        AND TIMEDIFF(horaIngreso_registro, CAST(CONCAT(DATE(horaIngreso_registro), ' 08:00:00') AS DATETIME)) > '00:30:00';
-    
-    -- Calcular el índice de retraso promedio
-    IF total_dias_laborables > 0 THEN
-        SET p_indice_retraso = (total_retrasos / total_dias_laborables) * 100;
-    ELSE
-        SET p_indice_retraso = 0;
-    END IF;
-    
-END$$
-DELIMITER ;
-
-DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `calcular_puntualidad_promedio`(
-    IN p_rut_empleado VARCHAR(15),
-    IN p_mes INT,
-    IN p_anio INT,
-    OUT p_puntualidad_promedio DECIMAL(5, 2)
-)
-BEGIN
-    DECLARE total_llegadas INT;
-    DECLARE puntual_llegadas INT;
-    DECLARE dias_laborables INT;
-    
-    -- Contar el total de días laborables en el mes y año dados
-    SELECT COUNT(DISTINCT DATE(horaIngreso_registro)) INTO dias_laborables
-    FROM registroentrada
-    WHERE rut_empleado = p_rut_empleado
-        AND MONTH(horaIngreso_registro) = p_mes
-        AND YEAR(horaIngreso_registro) = p_anio;
-    
-    -- Contar las llegadas puntualmente registradas
-    SELECT COUNT(*) INTO puntual_llegadas
-    FROM registroentrada e
-    JOIN registrosalida s ON e.rut_empleado = s.rut_empleado AND DATE(e.horaIngreso_registro) = DATE(s.horaSalida_registro)
-    WHERE e.rut_empleado = p_rut_empleado
-        AND MONTH(e.horaIngreso_registro) = p_mes
-        AND YEAR(e.horaIngreso_registro) = p_anio
-        AND HOUR(e.horaIngreso_registro) = 8
-        AND MINUTE(e.horaIngreso_registro) BETWEEN 0 AND 15;
-    
-    -- Calcular la puntualidad promedio
-    IF dias_laborables > 0 THEN
-        SET p_puntualidad_promedio = (puntual_llegadas / dias_laborables) * 100;  -- Convertir a porcentaje
-    ELSE
-        SET p_puntualidad_promedio = 0;
-    END IF;
-    
-END$$
-DELIMITER ;
-
-DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `calcular_sueldo_mensual`(
-    IN p_rut_empleado VARCHAR(15),
-    IN p_mes INT,
-    IN p_anio INT,
-    OUT p_sueldo_mensual DECIMAL(10,2)
-)
-BEGIN
-    DECLARE total_horas DECIMAL(10,2);
-    DECLARE sueldo_hora DECIMAL(10,2);
-
-    -- Calcular total de horas trabajadas en el mes y año especificados
-    SELECT SUM(TIMESTAMPDIFF(HOUR, e.horaIngreso_registro, s.horaSalida_registro))
-    INTO total_horas
-    FROM registroentrada e
-    JOIN registrosalida s ON e.rut_empleado = s.rut_empleado 
-                          AND DATE(e.horaIngreso_registro) = DATE(s.horaSalida_registro)
-    WHERE e.rut_empleado = p_rut_empleado 
-      AND MONTH(e.horaIngreso_registro) = p_mes 
-      AND YEAR(e.horaIngreso_registro) = p_anio
-      AND MONTH(s.horaSalida_registro) = p_mes
-      AND YEAR(s.horaSalida_registro) = p_anio;
-
-    -- Verificar si total_horas es NULL
-    IF total_horas IS NULL THEN
-        SET total_horas = 0;
-    END IF;
-
-    -- Obtener el sueldo por hora del empleado según su rol
-    SELECT r.sueldoPorHora_rol
-    INTO sueldo_hora
+    SELECT 
+        e.rut_empleado,
+        e.nombre_empleado,
+        e.apellidos_empleado,
+        r.nombre_rol AS rol,
+        p_mes AS mes,
+        p_anio AS anio,
+        COALESCE(sueldo_total, 0) AS sueldo_total,
+        COALESCE(horas_trabajadas, 0) AS horas_trabajadas,
+        COALESCE(puntualidad_promedio, 0) AS puntualidad_promedio,
+        COALESCE(tasa_asistencia, 0) AS tasa_asistencia,
+        COALESCE(indice_retraso, 0) AS indice_retraso
     FROM empleados e
-    JOIN rol r ON e.codigo_rol = r.codigo_rol
-    WHERE e.rut_empleado = p_rut_empleado;
-
-    -- Verificar si sueldo_hora es NULL
-    IF sueldo_hora IS NULL THEN
-        SET sueldo_hora = 0;
-    END IF;
-
-    -- Calcular el sueldo mensual
-    SET p_sueldo_mensual = total_horas * sueldo_hora;
+    LEFT JOIN rol r ON e.codigo_rol = r.codigo_rol
+    LEFT JOIN (
+        SELECT 
+            rut_empleado,
+            SUM(total_horas * sueldo_hora) AS sueldo_total,
+            SUM(total_horas) AS horas_trabajadas
+        FROM (
+            SELECT 
+                e.rut_empleado,
+                TIMESTAMPDIFF(HOUR, re.horaIngreso_registro, rs.horaSalida_registro) AS total_horas,
+                COALESCE(r.sueldoPorHora_rol, 0) AS sueldo_hora
+            FROM registroentrada re
+            JOIN registrosalida rs ON re.rut_empleado = rs.rut_empleado 
+                                  AND DATE(re.horaIngreso_registro) = DATE(rs.horaSalida_registro)
+            JOIN empleados e ON re.rut_empleado = e.rut_empleado
+            LEFT JOIN rol r ON e.codigo_rol = r.codigo_rol
+            WHERE MONTH(re.horaIngreso_registro) = p_mes
+              AND YEAR(re.horaIngreso_registro) = p_anio
+              AND MONTH(rs.horaSalida_registro) = p_mes
+              AND YEAR(rs.horaSalida_registro) = p_anio
+        ) AS horas_sueldo
+        GROUP BY rut_empleado
+    ) AS sueldo ON e.rut_empleado = sueldo.rut_empleado
+    LEFT JOIN (
+        SELECT 
+            rut_empleado,
+            AVG(puntualidad_promedio) AS puntualidad_promedio
+        FROM (
+            SELECT 
+                e.rut_empleado,
+                IF(total_llegadas > 0, (puntual_llegadas / total_llegadas) * 100, 0) AS puntualidad_promedio
+            FROM registroentrada e
+            LEFT JOIN (
+                SELECT 
+                    rut_empleado,
+                    COUNT(*) AS total_llegadas,
+                    SUM(IF(TIMEDIFF(e.horaIngreso_registro, CAST(CONCAT(DATE(e.horaIngreso_registro), ' 08:00:00') AS DATETIME)) > '00:30:00', 1, 0)) AS puntual_llegadas
+                FROM registroentrada e
+                WHERE MONTH(e.horaIngreso_registro) = p_mes
+                  AND YEAR(e.horaIngreso_registro) = p_anio
+                GROUP BY e.rut_empleado
+            ) AS puntualidad ON e.rut_empleado = puntualidad.rut_empleado
+        ) AS puntualidad_promedio
+        GROUP BY rut_empleado
+    ) AS puntualidad ON e.rut_empleado = puntualidad.rut_empleado
+    LEFT JOIN (
+        SELECT 
+            rut_empleado,
+            COALESCE((COUNT(DISTINCT DATE(horaIngreso_registro)) / DAY(LAST_DAY(CONCAT(p_anio, '-', LPAD(p_mes, 2, '00'), '-01')))) * 100, 0) AS tasa_asistencia
+        FROM registroentrada
+        WHERE MONTH(horaIngreso_registro) = p_mes
+          AND YEAR(horaIngreso_registro) = p_anio
+        GROUP BY rut_empleado
+    ) AS asistencia ON e.rut_empleado = asistencia.rut_empleado
+    LEFT JOIN (
+        SELECT 
+            rut_empleado,
+            COALESCE((COUNT(*) / DAY(LAST_DAY(CONCAT(p_anio, '-', LPAD(p_mes, 2, '00'), '-01')))) * 100, 0) AS indice_retraso
+        FROM registroentrada
+        WHERE MONTH(horaIngreso_registro) = p_mes
+          AND YEAR(horaIngreso_registro) = p_anio
+          AND TIMEDIFF(horaIngreso_registro, CAST(CONCAT(DATE(horaIngreso_registro), ' 08:00:00') AS DATETIME)) > '00:30:00'
+        GROUP BY rut_empleado
+    ) AS retraso ON e.rut_empleado = retraso.rut_empleado;
 END$$
 DELIMITER ;
 
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `calcular_tasa_asistencia`(
-    IN p_rut_empleado VARCHAR(15),
     IN p_mes INT,
-    IN p_anio INT,
-    OUT p_tasa_asistencia DECIMAL(5, 2)
+    IN p_anio INT
 )
 BEGIN
-    DECLARE total_dias_laborables INT;
-    DECLARE dias_asistidos INT;
-    
-    -- Contar el total de días laborables en el mes y año dados
-    SET total_dias_laborables = DAY(LAST_DAY(CONCAT(p_anio, '-', LPAD(p_mes, 2, '00'), '-01')));
-    
-    -- Contar los días asistidos
-    SELECT COUNT(DISTINCT DATE(horaIngreso_registro)) INTO dias_asistidos
-    FROM registroentrada
-    WHERE rut_empleado = p_rut_empleado
-        AND MONTH(horaIngreso_registro) = p_mes
-        AND YEAR(horaIngreso_registro) = p_anio;
-    
-    -- Calcular la tasa de asistencia
-    IF total_dias_laborables > 0 THEN
-        SET p_tasa_asistencia = (dias_asistidos / total_dias_laborables) * 100;
-    ELSE
-        SET p_tasa_asistencia = 0;
-    END IF;
-    
+    CREATE TEMPORARY TABLE tmp_tasa_asistencia (
+        rut_empleado VARCHAR(15),
+        tasa_asistencia DECIMAL(5, 2)
+    );
+
+    INSERT INTO tmp_tasa_asistencia
+    SELECT e.rut_empleado,
+           (COUNT(DISTINCT DATE(horaIngreso_registro)) / DAY(LAST_DAY(CONCAT(p_anio, '-', LPAD(p_mes, 2, '00'), '-01')))) * 100
+    FROM registroentrada e
+    WHERE MONTH(horaIngreso_registro) = p_mes AND YEAR(horaIngreso_registro) = p_anio
+    GROUP BY e.rut_empleado;
+
+    SELECT * FROM tmp_tasa_asistencia;
+    DROP TEMPORARY TABLE tmp_tasa_asistencia;
 END$$
 DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `calcular_sueldo_mensual`(
+    IN p_mes INT,
+    IN p_anio INT
+)
+BEGIN
+    CREATE TEMPORARY TABLE tmp_sueldo_mensual (
+        rut_empleado VARCHAR(15),
+        sueldo_mensual DECIMAL(10, 2)
+    );
+
+    INSERT INTO tmp_sueldo_mensual
+    SELECT e.rut_empleado,
+           COALESCE(SUM(TIMESTAMPDIFF(HOUR, r.horaIngreso_registro, s.horaSalida_registro)), 0) * r2.sueldoPorHora_rol
+    FROM empleados e
+    JOIN registroentrada r ON e.rut_empleado = r.rut_empleado
+    JOIN registrosalida s ON r.rut_empleado = s.rut_empleado AND DATE(r.horaIngreso_registro) = DATE(s.horaSalida_registro)
+    JOIN rol r2 ON e.codigo_rol = r2.codigo_rol
+    WHERE MONTH(r.horaIngreso_registro) = p_mes AND YEAR(r.horaIngreso_registro) = p_anio
+    GROUP BY e.rut_empleado;
+
+    SELECT * FROM tmp_sueldo_mensual;
+    DROP TEMPORARY TABLE tmp_sueldo_mensual;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `calcular_puntualidad_promedio`(
+    IN p_mes INT,
+    IN p_anio INT
+)
+BEGIN
+    CREATE TEMPORARY TABLE tmp_puntualidad_promedio (
+        rut_empleado VARCHAR(15),
+        puntualidad_promedio DECIMAL(5, 2)
+    );
+
+    INSERT INTO tmp_puntualidad_promedio
+    SELECT e.rut_empleado,
+           (COUNT(*) / (SELECT COUNT(DISTINCT DATE(horaIngreso_registro))
+                        FROM registroentrada
+                        WHERE rut_empleado = e.rut_empleado AND MONTH(horaIngreso_registro) = p_mes AND YEAR(horaIngreso_registro) = p_anio)) * 100
+    FROM registroentrada e
+    WHERE MONTH(e.horaIngreso_registro) = p_mes AND YEAR(e.horaIngreso_registro) = p_anio
+    AND HOUR(e.horaIngreso_registro) = 8 AND MINUTE(e.horaIngreso_registro) BETWEEN 0 AND 15
+    GROUP BY e.rut_empleado;
+
+    SELECT * FROM tmp_puntualidad_promedio;
+    DROP TEMPORARY TABLE tmp_puntualidad_promedio;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `calcular_indice_retraso`(
+    IN p_mes INT,
+    IN p_anio INT
+)
+BEGIN
+    CREATE TEMPORARY TABLE tmp_indice_retraso (
+        rut_empleado VARCHAR(15),
+        indice_retraso DECIMAL(5, 2)
+    );
+
+    INSERT INTO tmp_indice_retraso
+    SELECT e.rut_empleado,
+           (COUNT(*) / (SELECT COUNT(DISTINCT DATE(horaIngreso_registro))
+                        FROM registroentrada
+                        WHERE rut_empleado = e.rut_empleado AND MONTH(horaIngreso_registro) = p_mes AND YEAR(horaIngreso_registro) = p_anio)) * 100
+    FROM registroentrada e
+    WHERE MONTH(e.horaIngreso_registro) = p_mes AND YEAR(e.horaIngreso_registro) = p_anio
+    AND TIMEDIFF(horaIngreso_registro, CAST(CONCAT(DATE(horaIngreso_registro), ' 08:00:00') AS DATETIME)) > '00:30:00'
+    GROUP BY e.rut_empleado;
+
+    SELECT * FROM tmp_indice_retraso;
+    DROP TEMPORARY TABLE tmp_indice_retraso;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `calcular_horas_trabajadas`(
+    IN p_mes INT,
+    IN p_anio INT
+)
+BEGIN
+    CREATE TEMPORARY TABLE tmp_horas_trabajadas (
+        rut_empleado VARCHAR(15),
+        horas_trabajadas DECIMAL(10, 2)
+    );
+
+    INSERT INTO tmp_horas_trabajadas
+    SELECT e.rut_empleado,
+           SUM(TIMESTAMPDIFF(HOUR, e.horaIngreso_registro, s.horaSalida_registro))
+    FROM registroentrada e
+    JOIN registrosalida s ON e.rut_empleado = s.rut_empleado AND DATE(e.horaIngreso_registro) = DATE(s.horaSalida_registro)
+    WHERE MONTH(e.horaIngreso_registro) = p_mes AND YEAR(e.horaIngreso_registro) = p_anio
+    GROUP BY e.rut_empleado;
+
+    SELECT * FROM tmp_horas_trabajadas;
+    DROP TEMPORARY TABLE tmp_horas_trabajadas;
+END$$
+DELIMITER ;
+
 
 
 DELIMITER $$
