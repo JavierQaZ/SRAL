@@ -446,3 +446,32 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `CalcularCostoHorasPorRol3`(
+    IN codigo_rol VARCHAR(100),
+    IN mesDeseado INT,
+    IN anioDeseado INT
+)
+BEGIN
+    -- Calcular el total de horas trabajadas y su costo, agrupando por rol
+    SELECT
+        SUM(TIMESTAMPDIFF(HOUR, re.horaIngreso_registro, rs.horaSalida_registro)) AS total_horas_trabajadas,
+        SUM(TIMESTAMPDIFF(HOUR, re.horaIngreso_registro, rs.horaSalida_registro)) * r.sueldoPorHora_rol AS costo_total
+    FROM
+        empleados e
+    JOIN
+        rol r ON e.codigo_rol = r.codigo_rol
+    JOIN
+        registroentrada re ON e.rut_empleado = re.rut_empleado
+    JOIN
+        registrosalida rs ON e.rut_empleado = rs.rut_empleado 
+        AND DATE(re.horaIngreso_registro) = DATE(rs.horaSalida_registro)
+    WHERE
+        r.codigo_rol = codigo_rol
+        AND MONTH(re.horaIngreso_registro) = mesDeseado
+        AND YEAR(re.horaIngreso_registro) = anioDeseado
+    GROUP BY r.codigo_rol;
+END$$
+DELIMITER ;

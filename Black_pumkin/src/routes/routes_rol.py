@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from ..service.rol_service import add_rol_service, editar_rol_service, delete_rol_service,obtener_roles
+from ..service.rol_service import add_rol_service, editar_rol_service, delete_rol_service,obtener_roles,obtener_costo_horas_por_rol
 
 bp = Blueprint('rol_Blueprint', __name__)
 
@@ -86,3 +86,37 @@ def get_roles():
         return jsonify(roles_list), 200
     else:
         return jsonify({"error": "Error al obtener roles"}), 500
+
+
+@bp.route('/Kpi_sueldo_por_rol', methods=['POST'])
+@jwt_required()
+def obtener_costo_horas_por_rol_route():
+    try:
+        data = request.get_json()
+
+        # Validación de datos
+        required_fields = ['codigo_rol', 'mes', 'anio']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({"error": f"Falta el campo '{field}'"}), 400
+
+        codigo_rol = data['codigo_rol']
+        mes = data['mes']
+        anio = data['anio']
+
+        # Llamada al servicio para obtener el costo de horas por rol
+        resultado = obtener_costo_horas_por_rol(codigo_rol, mes, anio)
+
+        # Estructura de respuesta
+        response = {
+            "codigo_rol": resultado["codigo_rol"],
+            "mes": resultado["mes"],
+            "anio": resultado["anio"],
+            "total_horas_trabajadas": resultado["total_horas_trabajadas"],
+            "costo_total": resultado["costo_total"]
+        }
+
+        return jsonify(response), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

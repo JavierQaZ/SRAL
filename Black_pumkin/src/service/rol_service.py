@@ -83,3 +83,38 @@ def obtener_roles():
         print("Error al obtener roles:", e)
         return None
 
+
+def obtener_costo_horas_por_rol(codigo_rol, mes, anio):
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        # Llamar al procedimiento almacenado
+        cursor.callproc('CalcularCostoHorasPorRol3', (codigo_rol, mes, anio))
+
+        # Ejecutar una consulta para obtener los resultados del procedimiento almacenado
+        result = cursor.fetchone()
+        
+        # Asignar valores devueltos, si existen resultados
+        if result:
+            total_horas_trabajadas = result[0]
+            costo_total = result[1]
+        else:
+            total_horas_trabajadas = 0
+            costo_total = 0
+
+        # Cerrar conexión y cursor
+        cursor.close()
+        connection.close()
+
+        return {
+            "codigo_rol": codigo_rol,
+            "mes": mes,
+            "anio": anio,
+            "total_horas_trabajadas": total_horas_trabajadas,
+            "costo_total": costo_total
+        }
+
+    except Exception as e:
+        print("Error al obtener el costo de horas por rol:", e)
+        raise
