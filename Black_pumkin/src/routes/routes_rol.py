@@ -1,9 +1,13 @@
 from flask import Blueprint, request, jsonify
 from ..service.rol_service import add_rol_service, editar_rol_service, delete_rol_service,obtener_roles,obtener_costo_horas_por_rol
+from flask_jwt_extended import jwt_required
+
+
 
 bp = Blueprint('rol_Blueprint', __name__)
 
 @bp.route('/add', methods=['POST'])
+@jwt_required()
 def add_rol():
     try:
         data = request.get_json()
@@ -33,6 +37,7 @@ def add_rol():
     
 
 @bp.route('/edit', methods=['PUT'])
+@jwt_required()
 def edit_rol():
     try:
         data = request.get_json()
@@ -56,6 +61,7 @@ def edit_rol():
         return jsonify({"error": str(e)}), 500
 
 @bp.route('/delete', methods=['DELETE'])
+@jwt_required()
 def delete_rol():
     try:
         data = request.get_json()
@@ -75,6 +81,7 @@ def delete_rol():
         return jsonify({"error": str(e)}), 500
     
 @bp.route('/get', methods=['GET'])
+@jwt_required()
 def get_roles():
     roles = obtener_roles()
     if roles:
@@ -86,6 +93,7 @@ def get_roles():
         return jsonify(roles_list), 200
     else:
         return jsonify({"error": "Error al obtener roles"}), 500
+
 
 
 @bp.route('/Kpi_sueldo_por_rol', methods=['POST'])

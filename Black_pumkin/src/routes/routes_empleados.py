@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 from ..service.empleado_service import agregar_empleado_service,editar_empleado_service,delete_empleado_service, obtener_empleados_service
-
+from ..service.kpi_empleado_service import obtener_kpi_service
 bp = Blueprint('empleados_Blueprint', __name__)
 
 @bp.route('/add', methods=['POST'])
+@jwt_required()
 def add_empleado():
     try:
         data = request.get_json()
@@ -31,6 +33,7 @@ def add_empleado():
 
 
 @bp.route('/edit', methods=['PUT'])
+@jwt_required()
 def edit_empleado():
     try:
         data = request.get_json()
@@ -58,6 +61,7 @@ def edit_empleado():
     
 
 @bp.route('/delete', methods=['DELETE'])
+@jwt_required()
 def delete_empleado():
     try:
         data = request.get_json()
@@ -77,6 +81,7 @@ def delete_empleado():
         return jsonify({"error": str(e)}), 500
     
 @bp.route('/get', methods=['GET'])
+@jwt_required()
 def obtener_empleados():
     try:
         empleados = obtener_empleados_service()
@@ -102,4 +107,26 @@ def obtener_empleados():
         return jsonify({"error": str(e)}), 500
     
 
-    
+@bp.route('/kpi', methods=['GET'])
+@jwt_required()
+def obtener_kpi():
+    try:
+        mes = request.args.get('mes')
+        anio = request.args.get('anio')
+
+        # Validación de datos
+        if not mes or not anio:
+            return jsonify({"error": "Faltan los parámetros 'mes' y/o 'anio'"}), 400
+
+        print(f"Obteniendo KPIs para mes: {mes}, año: {anio}")
+
+        # Llamada al servicio para obtener KPIs de todos los empleados
+        kpis_totales = obtener_kpi_service(mes, anio)
+
+        print(f"KPIs obtenidos: {kpis_totales}")
+
+        return jsonify(kpis_totales), 200
+
+    except Exception as e:
+        print(f"Error al obtener KPIs: {str(e)}")
+        return jsonify({"error": str(e)}), 500
